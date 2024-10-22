@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ProfileRouter from "./Profile.routes.js";
+import ProfileRouter from "./Profile/Profile.routes.js";
 import { loginUser, registeredUser } from "../controller/user.controller.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
