@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { UserModel } from "../model/user.model.js";
 import { UserSchemaValidation } from "../validation/auth.validation.js";
 import jwt from "jsonwebtoken";
+import { date } from "zod";
 
 const GenerateToken =(id)=>{
     return jwt.sign({id},process.env.JWT_SECRET, {expiresIn:"1d"})
@@ -32,7 +33,26 @@ const registeredUser = async (req, res) => {
 
 const loginUser = async(req, res)=>{
     const { email, password } = req.body
-    console.log(email, password);
+    
+    const existUser = await UserModel.findOne({email})
+    if (!existUser) {
+        return res.status(400).json({message: "User Not Fount"})
+    }
+
+    const checkPassword = await existUser.comparePassword(password)
+    if (!checkPassword) {
+        return res.status(400).json({ message: "Password does not match" })
+    }
+    
+    const token = GenerateToken(email);
+    const user = existUser.toObject()
+    delete user.password
+
+    res.cookie("token", token, {secure:true}).cookie("role", user.role, {secure:true})
+    return res.status(StatusCodes.OK).json({
+        message: "Login Succesfull",
+        user
+    })
     
 }
 export { registeredUser, loginUser }
