@@ -29,4 +29,10 @@ const registeredUser = async (req, res) => {
     })
 }
 
-export { registeredUser }
+
+const loginUser = async(req, res)=>{
+    const { email, password } = req.body
+    console.log(email, password);
+    
+}
+export { registeredUser, loginUser }
