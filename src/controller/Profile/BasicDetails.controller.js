@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { BasicDetailsModel } from "../../model/Profile/BasicDetails.model.js";
-import { UserModel } from "../../model/user.model.js";
+
 
 export const BasicDetailSchemaValidation = z.object({
   firstName: z.string().min(3).max(50),
