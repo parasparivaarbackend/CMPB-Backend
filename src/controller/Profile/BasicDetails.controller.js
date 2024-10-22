@@ -2,9 +2,9 @@ import { z } from "zod";
 import { BasicDetailsModel } from "../../model/Profile/BasicDetails.model.js";
 import { UserModel } from "../../model/user.model.js";
 
-export const UserSchemaValidation = z.object({
-  firstName: z.string().min(10).max(12),
-  lastName: z.string().min(10).max(12),
+export const BasicDetailSchemaValidation = z.object({
+  firstName: z.string().min(3).max(50),
+  lastName: z.string().min(3).max(50),
   gender: z.enum(["male", "female"]),
   DOB: z.string(),
   maritalStatus: z.enum(["Single", "Divorced", "Widowed"]),
