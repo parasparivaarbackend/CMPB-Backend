@@ -2,39 +2,52 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "../utils/asyncHandler.js";
 import { UserModel } from "../model/user.model.js";
 
-const AuthMiddleware = asyncHandler(async (req, res) => {
+const AuthMiddleware = asyncHandler(async (req, _, next) => {
   const role = req.cookies?.role;
-  const cookies = req.cookies;
-  console.log(cookies);
-
-  console.log("here 1 role ", role);
 
   if (role === "user") {
-    console.log("2");
-
-    UserAuth();
+    UserAuth(req);
+    next();
   } else if (role === "admin") {
     AdminAuth();
+    next();
   }
   throw new Error("unauthorize");
 });
 
-const UserAuth = async (req, res) => {
-  const token = req.cookies.token;
-  if (!token) {
-    return res.status(400).json({ message: "Unauthenticated" });
-  }
+const UserAuth = async (req) => {
+  const token = req.cookies?.token;
+  console.log("inside UserAuth");
+  console.log(token);
+
+  if (!token) return res.status(400).json({ message: "Unauthenticated" });
+
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  console.log("decodedToken", decodedToken);
-  const user = UserModel.findById(decodedToken._id).select(
+
+  const user = await UserModel.findById(decodedToken._id).select(
     "-password -createdAt -updatedAt -__v"
   );
   if (!user) {
     return res.status(400).json({ message: "Invalid User" });
   }
   req.user = user;
-  next();
 };
-const AdminAuth = async (req, res) => {};
+const AdminAuth = async (req) => {
+  const token = req.cookies?.token;
+  console.log("inside AdminAuth");
+
+  if (!token) {
+    return res.status(400).json({ message: "Unauthenticated" });
+  }
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+  const admin = await UserModel.findById(decodedToken._id).select(
+    "-password -createdAt -updatedAt -__v"
+  );
+  if (!user) {
+    return res.status(400).json({ message: "Invalid User" });
+  }
+  req.user = user;
+};
 
 export default AuthMiddleware;

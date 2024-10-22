@@ -47,7 +47,7 @@ const loginUser = async (req, res) => {
 
   const existUser = await UserModel.findOne({ email });
   if (!existUser) {
-    return res.status(400).json({ message: "User Not Fount" });
+    return res.status(400).json({ message: "User Not Found" });
   }
 
   const checkPassword = await existUser.comparePassword(password);
