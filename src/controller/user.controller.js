@@ -98,7 +98,50 @@ const loginUser = async (req, res) => {
     .cookie("role", user.role, {
       httpOnly: false,
       secure: true,
+    })
+    .cookie("lax", "lax  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("none", "none httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "none",
+      path: "/",
+    })
+    .cookie("strict", " httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    })
+    .cookie("lax-2", "lax  httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("none-2", "none httpOnly: true secure: false", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "none",
+      path: "/",
+    })
+    .cookie("strict-2", " httpOnly: true secure: false", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
     });
+
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
     ...user,
