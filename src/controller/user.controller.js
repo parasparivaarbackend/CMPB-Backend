@@ -30,12 +30,12 @@ const registeredUser = async (req, res) => {
   const token = GenerateToken(data._id);
   res
     .cookie("token", token, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
     })
     .cookie("role", data.role, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
     });
   return res.status(StatusCodes.OK).json({
     message: "User registered successfull",
@@ -62,11 +62,11 @@ const loginUser = async (req, res) => {
   res
     .cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
     })
     .cookie("role", user.role, {
       httpOnly: true,
-      secure: true,
+      secure: false,
     });
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
