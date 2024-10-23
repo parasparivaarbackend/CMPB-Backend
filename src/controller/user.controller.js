@@ -95,11 +95,12 @@ const loginUser = async (req, res) => {
     .cookie("token", token, {
       httpOnly: true,
       secure: false,
-      path:"/"
+      path: "/",
     })
     .cookie("role", user.role, {
       httpOnly: false,
       secure: true,
+      path: "/",
     })
     .cookie("lax", "lax  httpOnly: false secure: true", {
       httpOnly: false,
