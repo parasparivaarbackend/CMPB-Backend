@@ -3,6 +3,7 @@ import { CreateProfileDetails } from "../../controller/Profile/ProfileDetails.co
 import asyncHandler from "../../utils/asyncHandler.js";
 import AuthMiddleware from "../../middleware/Auth.middleware.js";
 import presentaddressRouter from "./PresentAddress.routes.js";
+import carrerRouter from "./carrer.routes.js";
 
 const ProfileRouter = Router();
 
@@ -14,5 +15,7 @@ ProfileRouter.route("/create").post(
 );
 
 ProfileRouter.use("/presentaddress", presentaddressRouter)
+
+ProfileRouter.use("/carrer", carrerRouter)
 
 export default ProfileRouter;
