@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { ProfileModel } from "../model/Profile/profile.model.js";
 
+
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
@@ -15,7 +16,7 @@ const UserSchemaValidation = z.object({
   phone: z.string().min(10).max(12),
   DOB: z.string().min(2),
   password: z.string().min(6).max(16),
-  gender: z.enum(["male", "female"])
+  gender: z.enum(["male", "female"]),
 });
 
 const registeredUser = async (req, res) => {
@@ -37,18 +38,16 @@ const registeredUser = async (req, res) => {
     });
   }
 
-
   const user = new UserModel(validateData.data);
   console.log("user before save", user);
 
-  const profileData = await ProfileModel.create(validateData.data)
+  const profileData = await ProfileModel.create(validateData.data);
   console.log("Profile created", profileData);
 
-
   if (!profileData) {
-    return res.status(500).json({ message: "Failed to register user" })
+    return res.status(500).json({ message: "Failed to register user" });
   }
-  user.ProfileID = profileData._id
+  user.ProfileID = profileData._id;
 
   const savedUser = await user.save();
   const data = savedUser.toObject();
@@ -62,11 +61,11 @@ const registeredUser = async (req, res) => {
   res
     .cookie("token", token, {
       httpOnly: false,
-      secure: false,
+      secure: true,
     })
     .cookie("role", savedUser.role, {
       httpOnly: false,
-      secure: false,
+      secure: true,
     });
   return res.status(StatusCodes.OK).json({
     message: "User registered successfull",
@@ -96,11 +95,93 @@ const loginUser = async (req, res) => {
     .cookie("token", token, {
       httpOnly: true,
       secure: false,
+      path: "/",
     })
     .cookie("role", user.role, {
+      httpOnly: false,
+      secure: true,
+      path: "/",
+    })
+    .cookie("lax", "lax  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("empty-1.1", "with path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      path: "/",
+    })
+    .cookie("empty-1.2", "without path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+    })
+    .cookie("strict", " httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    }) //part 2
+    .cookie("lax-2", "lax  httpOnly: true secure: false", {
       httpOnly: true,
       secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("strict-2", " httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    })
+    .cookie("A-lax", "lax  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("A-empty-1.1", "with path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      path: "/",
+    })
+    .cookie("A-empty-1.2", "without path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      // No path specified, defaults to '/'
+    })
+    .cookie("A-strict", " httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    })
+    .cookie("A-lax-2", "lax  httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("A-strict-2", " httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
     });
+
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
     ...user,
