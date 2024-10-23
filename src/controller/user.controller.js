@@ -119,7 +119,7 @@ const loginUser = async (req, res) => {
       maxAge: 3600000, // 1 hour
       sameSite: "strict",
       path: "/",
-    })
+    })//part 2
     .cookie("lax-2", "lax  httpOnly: true secure: false", {
       httpOnly: true,
       secure: false,
@@ -128,15 +128,15 @@ const loginUser = async (req, res) => {
       path: "/",
     })
     .cookie("none-2", "none httpOnly: true secure: false", {
-      httpOnly: false,
-      secure: true,
+      httpOnly: true,
+      secure: false,
       maxAge: 3600000, // 1 hour
       sameSite: "none",
       path: "/",
     })
     .cookie("strict-2", " httpOnly: true secure: false", {
-      httpOnly: false,
-      secure: true,
+      httpOnly: true,
+      secure: false,
       maxAge: 3600000, // 1 hour
       sameSite: "strict",
       path: "/",
