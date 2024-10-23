@@ -92,8 +92,8 @@ const loginUser = async (req, res) => {
 
   res
     .cookie("token", token, {
-      httpOnly: false,
-      secure: true,
+      httpOnly: true,
+      secure: false,
     })
     .cookie("role", user.role, {
       httpOnly: false,
