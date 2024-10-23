@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
 const dbConnect = async () => {
-  console.log(process.env.MONGODB_URI);
-
   try {
     const connection = await mongoose.connect(`${process.env.MONGODB_URI}`, {
       dbName: "CMPB",

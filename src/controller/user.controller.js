@@ -2,7 +2,6 @@ import { StatusCodes } from "http-status-codes";
 import { UserModel } from "../model/user.model.js";
 import { UserSchemaValidation } from "../validation/auth.validation.js";
 import jwt from "jsonwebtoken";
-import { date } from "zod";
 
 const GenerateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -48,7 +47,7 @@ const loginUser = async (req, res) => {
 
   const existUser = await UserModel.findOne({ email });
   if (!existUser) {
-    return res.status(400).json({ message: "User Not Fount" });
+    return res.status(400).json({ message: "User Not Found" });
   }
 
   const checkPassword = await existUser.comparePassword(password);

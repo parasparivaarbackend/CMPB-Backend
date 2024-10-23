@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-import { Schema } from "zod";
+import mongoose, { Schema } from "mongoose";
 
 const BasicDetailsSchema = new mongoose.Schema({
   ProfileID: {

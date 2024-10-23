@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { BasicDetailsModel } from "../../model/Profile/BasicDetails.model";
-import { UserModel } from "../../model/user.model";
+import { BasicDetailsModel } from "../../model/Profile/BasicDetails.model.js";
 
-export const UserSchemaValidation = z.object({
-  firstName: z.string().min(10).max(12),
-  lastName: z.string().min(10).max(12),
+
+export const BasicDetailSchemaValidation = z.object({
+  firstName: z.string().min(3).max(50),
+  lastName: z.string().min(3).max(50),
   gender: z.enum(["male", "female"]),
   DOB: z.string(),
   maritalStatus: z.enum(["Single", "Divorced", "Widowed"]),
@@ -15,18 +15,16 @@ export const UserSchemaValidation = z.object({
 export const CreateBasicDetails = async (req, res) => {
   const data = req.body;
   try {
-    const user = await UserModel.findById({ _id: req.user._id });
-
-    if (!user) return res.status(400).json({ message: "Invalid User" });
-
     const BasicDetails = await BasicDetailsModel.create({
       ...data,
-      UserID: user._id,
+      UserID: req.user._id,
     });
     if (!BasicDetails)
       return res.status(400).json({ message: "Failed to add Basic Details" });
 
-    return res.status(200).json({ message: "Basic details Added" });
+    return res
+      .status(200)
+      .json({ message: "Basic details Added Successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Failed to add Basic Details" });
   }
