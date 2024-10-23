@@ -91,189 +91,95 @@ const loginUser = async (req, res) => {
   const user = existUser.toObject();
   delete user.password;
 
-  // res
-  //   .cookie("token", token, {
-  //     httpOnly: true,
-  //     secure: false,
-  //   })
-  //   .cookie("role", user.role, {
-  //     httpOnly: false,
-  //     secure: true,
-  //   })
-  //   .cookie("lax", "lax  httpOnly: false secure: true", {
-  //     httpOnly: false,
-  //     secure: true,
-  //     maxAge: 3600000, // 1 hour
-  //     sameSite: "lax",
-  //     path: "/",
-  //   })
-  //   .cookie("empty-1.1", "with path  httpOnly: false secure: true", {
-  //     httpOnly: false,
-  //     secure: true,
-  //     maxAge: 3600000, // 1 hour
-  //     path: "/",
-  //   })
-  //   .cookie("empty-1.2", "without path  httpOnly: false secure: true", {
-  //     httpOnly: false,
-  //     secure: true,
-  //     maxAge: 3600000, // 1 hour
-  //   })
-  //   .cookie("strict", " httpOnly: false secure: true", {
-  //     httpOnly: false,
-  //     secure: true,
-  //     maxAge: 3600000, // 1 hour
-  //     sameSite: "strict",
-  //     path: "/",
-  //   }) //part 2
-  //   .cookie("lax-2", "lax  httpOnly: true secure: false", {
-  //     httpOnly: true,
-  //     secure: false,
-  //     maxAge: 3600000, // 1 hour
-  //     sameSite: "lax",
-  //     path: "/",
-  //   })
-  //   .cookie("strict-2", " httpOnly: true secure: false", {
-  //     httpOnly: true,
-  //     secure: false,
-  //     maxAge: 3600000, // 1 hour
-  //     sameSite: "strict",
-  //     path: "/",
-  //   })
-  //   .cookie("A-lax", "lax  httpOnly: false secure: true", {
-  //     httpOnly: false,
-  //     secure: true,
-  //     maxAge: 3600000, // 1 hour
-  //     sameSite: "lax",
-  //     path: "/",
-  //   })
-  //   .cookie("A-empty-1.1", "with path  httpOnly: false secure: true", {
-  //     httpOnly: false,
-  //     secure: true,
-  //     maxAge: 3600000, // 1 hour
-  //     path: "/",
-  //   })
-  //   .cookie("A-empty-1.2", "without path  httpOnly: false secure: true", {
-  //     httpOnly: false,
-  //     secure: true,
-  //     maxAge: 3600000, // 1 hour
-  //     // No path specified, defaults to '/'
-  //   })
-  //   .cookie("A-strict", " httpOnly: false secure: true", {
-  //     httpOnly: false,
-  //     secure: true,
-  //     maxAge: 3600000, // 1 hour
-  //     sameSite: "strict",
-  //     path: "/",
-  //   })
-  //   .cookie("A-lax-2", "lax  httpOnly: true secure: false", {
-  //     httpOnly: true,
-  //     secure: false,
-  //     maxAge: 3600000, // 1 hour
-  //     sameSite: "lax",
-  //     path: "/",
-  //   })
-  //   .cookie("A-strict-2", " httpOnly: true secure: false", {
-  //     httpOnly: true,
-  //     secure: false,
-  //     maxAge: 3600000, // 1 hour
-  //     sameSite: "strict",
-  //     path: "/",
-  //   });
-
-  // Set cookies using js-cookie
-  Cookies.set("token", token, { path: "/" }); // Set path as needed
-
-  Cookies.set("role", user.role, { path: "/" });
-
-  Cookies.set("lax", "lax", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: true,
-    expires: 1 / 24, // 1 hour
-    sameSite: "lax",
-    path: "/",
-  });
-
-  Cookies.set("empty-1.1", "with path", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: true,
-    expires: 1 / 24, // 1 hour
-    path: "/",
-  });
-
-  Cookies.set("empty-1.2", "without path", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: true,
-    expires: 1 / 24, // 1 hour
-  });
-
-  Cookies.set("strict", "strict", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: true,
-    expires: 1 / 24, // 1 hour
-    sameSite: "strict",
-    path: "/",
-  });
-
-  Cookies.set("lax-2", "lax", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: false,
-    expires: 1 / 24, // 1 hour
-    sameSite: "lax",
-    path: "/",
-  });
-
-  Cookies.set("strict-2", "strict", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: false,
-    expires: 1 / 24, // 1 hour
-    sameSite: "strict",
-    path: "/",
-  });
-
-  Cookies.set("A-lax", "lax", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: true,
-    expires: 1 / 24, // 1 hour
-    sameSite: "lax",
-    path: "/",
-  });
-
-  Cookies.set("A-empty-1.1", "with path", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: true,
-    expires: 1 / 24, // 1 hour
-    path: "/",
-  });
-
-  Cookies.set("A-empty-1.2", "without path", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: true,
-    expires: 1 / 24, // 1 hour
-  });
-
-  Cookies.set("A-strict", "strict", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: true,
-    expires: 1 / 24, // 1 hour
-    sameSite: "strict",
-    path: "/",
-  });
-
-  Cookies.set("A-lax-2", "lax", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: false,
-    expires: 1 / 24, // 1 hour
-    sameSite: "lax",
-    path: "/",
-  });
-
-  Cookies.set("A-strict-2", "strict", {
-    httpOnly: false, // Cannot set this via js-cookie
-    secure: false,
-    expires: 1 / 24, // 1 hour
-    sameSite: "strict",
-    path: "/",
-  });
+  res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      path:"/"
+    })
+    .cookie("role", user.role, {
+      httpOnly: false,
+      secure: true,
+    })
+    .cookie("lax", "lax  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("empty-1.1", "with path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      path: "/",
+    })
+    .cookie("empty-1.2", "without path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+    })
+    .cookie("strict", " httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    }) //part 2
+    .cookie("lax-2", "lax  httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("strict-2", " httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    })
+    .cookie("A-lax", "lax  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("A-empty-1.1", "with path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      path: "/",
+    })
+    .cookie("A-empty-1.2", "without path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      // No path specified, defaults to '/'
+    })
+    .cookie("A-strict", " httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    })
+    .cookie("A-lax-2", "lax  httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("A-strict-2", " httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    });
 
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
