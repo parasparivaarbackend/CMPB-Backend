@@ -98,8 +98,7 @@ const loginUser = async (req, res) => {
     .cookie("role", user.role, {
       httpOnly: false,
       secure: true,
-    });
-  res
+    })
     .cookie("lax", "lax  httpOnly: false secure: true", {
       httpOnly: false,
       secure: true,
@@ -138,63 +137,47 @@ const loginUser = async (req, res) => {
       maxAge: 3600000, // 1 hour
       sameSite: "strict",
       path: "/",
+    })
+    .cookie("A-lax", "lax  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .res.cookie("A-empty-1.1", "with path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      path: "/",
+    })
+    .cookie("A-empty-1.2", "without path  httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      // No path specified, defaults to '/'
+    })
+    .cookie("A-strict", " httpOnly: false secure: true", {
+      httpOnly: false,
+      secure: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
+    })
+    .cookie("A-lax-2", "lax  httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+      path: "/",
+    })
+    .cookie("A-strict-2", " httpOnly: true secure: false", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000, // 1 hour
+      sameSite: "strict",
+      path: "/",
     });
-
-  // Setting cookies with various configurations
-
-  // 1. Cookie: 'lax'
-  res.cookie("A-lax", "lax  httpOnly: false secure: true", {
-    httpOnly: false,
-    secure: true,
-    maxAge: 3600000, // 1 hour
-    sameSite: "lax",
-    path: "/",
-  });
-
-  // 2. Cookie: 'empty-1.1'
-  res.cookie("A-empty-1.1", "with path  httpOnly: false secure: true", {
-    httpOnly: false,
-    secure: true,
-    maxAge: 3600000, // 1 hour
-    path: "/",
-  });
-
-  // 3. Cookie: 'empty-1.2'
-  res.cookie("A-empty-1.2", "without path  httpOnly: false secure: true", {
-    httpOnly: false,
-    secure: true,
-    maxAge: 3600000, // 1 hour
-    // No path specified, defaults to '/'
-  });
-
-  // 4. Cookie: 'strict'
-  res.cookie("A-strict", " httpOnly: false secure: true", {
-    httpOnly: false,
-    secure: true,
-    maxAge: 3600000, // 1 hour
-    sameSite: "strict",
-    path: "/",
-  });
-
-  // Part 2
-
-  // 5. Cookie: 'lax-2'
-  res.cookie("A-lax-2", "lax  httpOnly: true secure: false", {
-    httpOnly: true,
-    secure: false,
-    maxAge: 3600000, // 1 hour
-    sameSite: "lax",
-    path: "/",
-  });
-
-  // 6. Cookie: 'strict-2'
-  res.cookie("A-strict-2", " httpOnly: true secure: false", {
-    httpOnly: true,
-    secure: false,
-    maxAge: 3600000, // 1 hour
-    sameSite: "strict",
-    path: "/",
-  });
 
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
