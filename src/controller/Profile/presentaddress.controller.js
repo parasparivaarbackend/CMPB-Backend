@@ -10,14 +10,21 @@ const validateSchema = z.object({
 
 const CreatePresentAddress = async (req, res) => {
     const data = req.body;
-    const { ProfileID } = req.params
     const validateData = validateSchema.safeParse(data);
 
     if (validateData.success === false) {
         return res.status(400).json({ ...validateData.error.issues });
     }
+    const ProfileID = req.user.ProfileID.toString();
 
-    const insertData = await presentaddressmodels.create({ ProfileID, ...validateData.data })
+    const checkProfile = await presentaddressmodels.findOne({ ProfileID })
+    
+
+    if (checkProfile) {
+        return res.status(400).json({ message: "Present Address already Exist" });
+    }
+
+    const insertData = await presentaddressmodels.create({ ProfileID: ProfileID, ...validateData.data })
     res.status(200).json({
         message: "Present Address create successfull",
         data: insertData
@@ -31,7 +38,7 @@ const UpdatePresentAddress = async (req, res) => {
     const userId = req.user._id
 
     // const existUser = await 
- 
+
     const validateData = validateSchema.safeParse(data);
 
     if (validateData.success === false) {
