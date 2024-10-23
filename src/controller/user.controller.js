@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { ProfileModel } from "../model/Profile/profile.model.js";
 
-
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
@@ -180,7 +179,8 @@ const loginUser = async (req, res) => {
       maxAge: 3600000, // 1 hour
       sameSite: "strict",
       path: "/",
-    });
+    })
+    .cookie("myCookie", "myValue", { maxAge: 600000 }); // Set a cookie with a 10-minute expiration time;
 
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",

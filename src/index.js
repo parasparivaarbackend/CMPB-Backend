@@ -14,7 +14,11 @@ app.use(
   })
 );
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-app.use(cookieParser());
+app.use(cookieParser);
+
+app.listen(3000, () => {
+  console.log("Server listening on port 3000");
+});
 
 app.use("/api/v1", IndexRoute);
 
