@@ -16,6 +16,8 @@ app.use(
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser);
 
+app.use("/api/v1", IndexRoute);
+
 dbConnect()
   .then(() =>
     app.listen(PORT, () => {
