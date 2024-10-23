@@ -3,21 +3,21 @@ import { UserModel } from "../model/user.model.js";
 import { UserSchemaValidation } from "../validation/auth.validation.js";
 import jwt from "jsonwebtoken";
 
-const GenerateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+const GenerateToken = (_id, email) => {
+  return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
 
 const registeredUser = async (req, res) => {
   const userData = req.body;
-  const validatedData = UserSchemaValidation.safeParse(userData);
-  if (validatedData.success === false) {
-    return res.status(400).json(...validatedData.error.issues);
+  const validateData = UserSchemaValidation.safeParse(userData);
+  if (validateData.success === false) {
+    return res.status(400).json({ ...validateData.error.issues });
   }
 
   const existUser = await UserModel.findOne({
     $or: [
-      { email: validatedData.data.email },
-      { phone: validatedData.data.phone },
+      { email: validateData.data.email },
+      { phone: validateData.data.phone },
     ],
   });
   if (existUser) {
@@ -25,7 +25,7 @@ const registeredUser = async (req, res) => {
       message: "User already Exist",
     });
   }
-  const data = await UserModel.create(validatedData.data);
+  const data = await UserModel.create(validateData.data);
 
   const token = GenerateToken(data._id);
   res
@@ -55,7 +55,7 @@ const loginUser = async (req, res) => {
     return res.status(400).json({ message: "Password does not match" });
   }
 
-  const token = GenerateToken(email);
+  const token = GenerateToken(existUser._id, email);
   const user = existUser.toObject();
   delete user.password;
 
@@ -71,6 +71,7 @@ const loginUser = async (req, res) => {
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
     user,
+    token,
   });
 };
 export { registeredUser, loginUser };
