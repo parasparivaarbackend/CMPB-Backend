@@ -3,7 +3,7 @@ import { UserModel } from "../model/user.model.js";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { ProfileModel } from "../model/Profile/profile.model.js";
-import Cookies from "js-cookie";
+
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
