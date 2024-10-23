@@ -1,11 +1,12 @@
 import { z } from 'zod'
 import { presentaddressmodels } from '../../model/Profile/PresentAddress.js';
+import { ApiError } from '../../utils/ApiError.js';
 
 const validateSchema = z.object({
     Country: z.string().min(2),
     State: z.string().min(2),
     City: z.string().min(2),
-    Pincode: z.string().min(2)
+    Pincode: z.string().min(6)
 })
 
 const CreatePresentAddress = async (req, res) => {
@@ -18,7 +19,7 @@ const CreatePresentAddress = async (req, res) => {
     const ProfileID = req.user.ProfileID.toString();
 
     const checkProfile = await presentaddressmodels.findOne({ ProfileID })
-    
+
 
     if (checkProfile) {
         return res.status(400).json({ message: "Present Address already Exist" });
@@ -33,21 +34,17 @@ const CreatePresentAddress = async (req, res) => {
 }
 
 const UpdatePresentAddress = async (req, res) => {
-    const { id } = req.params
+    const ProfileID = req.user.ProfileID.toString();
     const data = req.body
-    const userId = req.user._id
-
-    // const existUser = await 
 
     const validateData = validateSchema.safeParse(data);
 
     if (validateData.success === false) {
-        return res.status(400).json({ ...validateData.error.issues });
+        // return res.status(400).json({ ...validateData.error.issues });
+        return new ApiError(400, "Validation Error", ...validateData.error.issues);
     }
     try {
-
-        const updateData = await presentaddressmodels.findByIdAndUpdate(id, { ...validateData.data }, { new: true })
-        console.log(updateData);
+        const updateData = await presentaddressmodels.findOneAndUpdate({ ProfileID }, { ...validateData.data }, { new: true })
         return res.status(200).json(updateData);
     } catch (error) {
         console.log(error);

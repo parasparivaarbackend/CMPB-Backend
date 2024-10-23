@@ -51,7 +51,8 @@ const registeredUser = async (req, res) => {
   user.ProfileID = profileData._id
 
   const savedUser = await user.save();
-  console.log("savedUser", savedUser);
+  const data = savedUser.toObject();
+  delete data.password;
 
   if (!savedUser) {
     return res.status(500).json({ message: "Failed to register user" });
@@ -69,6 +70,8 @@ const registeredUser = async (req, res) => {
     });
   return res.status(StatusCodes.OK).json({
     message: "User registered successfull",
+    ...data,
+    token,
   });
 };
 
@@ -100,7 +103,7 @@ const loginUser = async (req, res) => {
     });
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
-    user,
+    ...user,
     token,
   });
 };
