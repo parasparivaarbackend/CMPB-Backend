@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { CreateProfileDetails } from "../../controller/Profile/ProfileDetails.controller.js";
+import {
+  CreateProfileDetails,
+  UpdateProfileDetails,
+} from "../../controller/Profile/ProfileDetails.controller.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import AuthMiddleware from "../../middleware/Auth.middleware.js";
 
@@ -10,6 +13,10 @@ const ProfileRouter = Router();
 ProfileRouter.route("/create").post(
   AuthMiddleware,
   asyncHandler(CreateProfileDetails)
+);
+ProfileRouter.route("/update").put(
+  AuthMiddleware,
+  asyncHandler(UpdateProfileDetails)
 );
 
 export default ProfileRouter;

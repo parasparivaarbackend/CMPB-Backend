@@ -33,3 +33,25 @@ export const CreateProfileDetails = async (req, res) => {
     return res.status(500).json({ message: "Failed to add Profile Details" });
   }
 };
+
+export const UpdateProfileDetails = async (req, res) => {
+  const data = req.body;
+  const validateData = ProfileDetailSchemaValidation.safeParse(data);
+  console.log(validateData);
+  return;
+  if (validateData.success === false) {
+    return res.status(400).json({ ...validateData.error.issues });
+  }
+  try {
+    const updatedProfile = await ProfileModel.findByIdAndUpdate(
+      { _id: data.ProfileID },
+      { ...data }
+    );
+    if (!updatedProfile) {
+      return res.status(500).json({ message: "Failed to update Profile Data" });
+    }
+    return res.json(200).json({ message: "Data updated Successfully" });
+  } catch (error) {
+    console.error(error);
+  }
+};
