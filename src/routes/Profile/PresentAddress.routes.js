@@ -7,6 +7,6 @@ import AuthMiddleware from "../../middleware/Auth.middleware.js";
 const presentaddressRouter = Router()
 
 presentaddressRouter.route("/create").post(AuthMiddleware, asyncHandler(CreatePresentAddress))
-presentaddressRouter.route("/update/:ProfileID/:id").post(AuthMiddleware, asyncHandler(UpdatePresentAddress))
+presentaddressRouter.route("/update").put(AuthMiddleware, asyncHandler(UpdatePresentAddress))
 
 export default presentaddressRouter
