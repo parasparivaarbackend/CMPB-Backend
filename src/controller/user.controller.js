@@ -92,11 +92,11 @@ const loginUser = async (req, res) => {
 
   res
     .cookie("token", token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
     })
     .cookie("role", user.role, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
     });
   return res.status(StatusCodes.OK).json({
