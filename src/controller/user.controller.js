@@ -145,7 +145,7 @@ const loginUser = async (req, res) => {
       sameSite: "lax",
       path: "/",
     })
-    .res.cookie("A-empty-1.1", "with path  httpOnly: false secure: true", {
+    .cookie("A-empty-1.1", "with path  httpOnly: false secure: true", {
       httpOnly: false,
       secure: true,
       maxAge: 3600000, // 1 hour
