@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
 const UserSchema = new mongoose.Schema(
@@ -37,6 +37,10 @@ const UserSchema = new mongoose.Schema(
       require: true,
       default: false,
     },
+    ProfileID: {
+      type: Schema.Types.ObjectId,
+      ref: "profiles"
+    }
   },
   { timestamps: true }
 );
