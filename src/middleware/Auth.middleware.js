@@ -2,23 +2,23 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "../utils/asyncHandler.js";
 import { UserModel } from "../model/user.model.js";
 
-const AuthMiddleware = asyncHandler(async (req, _, next) => {
+const AuthMiddleware = asyncHandler(async (req, res, next) => {
   const role = req.cookies?.role;
 
   if (role === "user") {
-    UserAuth(req);
+    await UserAuth(req, res);
+
     next();
   } else if (role === "admin") {
-    AdminAuth();
+    await AdminAuth();
     next();
+  } else {
+    return res.status(400).json({ message: "unauthorized user" });
   }
-  throw new Error("unauthorize");
 });
 
-const UserAuth = async (req) => {
+const UserAuth = async (req, res) => {
   const token = req.cookies?.token;
-  console.log("inside UserAuth");
-  console.log(token);
 
   if (!token) return res.status(400).json({ message: "Unauthenticated" });
 
@@ -27,14 +27,15 @@ const UserAuth = async (req) => {
   const user = await UserModel.findById(decodedToken._id).select(
     "-password -createdAt -updatedAt -__v"
   );
+
   if (!user) {
     return res.status(400).json({ message: "Invalid User" });
   }
+
   req.user = user;
 };
-const AdminAuth = async (req) => {
+const AdminAuth = async (req, res) => {
   const token = req.cookies?.token;
-  console.log("inside AdminAuth");
 
   if (!token) {
     return res.status(400).json({ message: "Unauthenticated" });
