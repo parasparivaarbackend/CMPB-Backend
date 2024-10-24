@@ -82,6 +82,21 @@ const loginUser = async (req, res) => {
   const user = existUser.toObject();
   delete user.password;
 
+  res
+    .cookie("myCookie", "cookieValue", {
+      maxAge: 900000,
+      httpOnly: false,
+      secure: true,
+      sameSite: "Lax",
+    })
+    .cookie("token", token, {
+      maxAge: 900000,
+      httpOnly: false,
+      secure: true,
+      sameSite: "None",
+      expires: new Date(Date.now() + 8 * 3600000),
+    });
+
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
     ...user,
