@@ -15,7 +15,7 @@ const UserSchemaValidation = z.object({
   phone: z.string().min(10).max(12),
   DOB: z.string().min(2),
   password: z.string().min(6).max(16),
-  gender: z.enum(["male", "female"])
+  gender: z.enum(["male", "female"]),
 });
 
 const registeredUser = async (req, res) => {
@@ -37,18 +37,16 @@ const registeredUser = async (req, res) => {
     });
   }
 
-
   const user = new UserModel(validateData.data);
   console.log("user before save", user);
 
-  const profileData = await ProfileModel.create(validateData.data)
+  const profileData = await ProfileModel.create(validateData.data);
   console.log("Profile created", profileData);
 
-
   if (!profileData) {
-    return res.status(500).json({ message: "Failed to register user" })
+    return res.status(500).json({ message: "Failed to register user" });
   }
-  user.ProfileID = profileData._id
+  user.ProfileID = profileData._id;
 
   const savedUser = await user.save();
   const data = savedUser.toObject();
@@ -59,15 +57,7 @@ const registeredUser = async (req, res) => {
   }
 
   const token = GenerateToken(savedUser._id, savedUser.email);
-  res
-    .cookie("token", token, {
-      httpOnly: false,
-      secure: false,
-    })
-    .cookie("role", savedUser.role, {
-      httpOnly: false,
-      secure: false,
-    });
+
   return res.status(StatusCodes.OK).json({
     message: "User registered successfull",
     ...data,
@@ -92,15 +82,6 @@ const loginUser = async (req, res) => {
   const user = existUser.toObject();
   delete user.password;
 
-  res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-    })
-    .cookie("role", user.role, {
-      httpOnly: true,
-      secure: false,
-    });
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
     ...user,

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { presentaddressmodels } from '../../model/Profile/PresentAddress.js';
-import { ApiError } from '../../utils/ApiError.js';
+
 
 const validateSchema = z.object({
     Country: z.string().min(2),
@@ -38,10 +38,11 @@ const UpdatePresentAddress = async (req, res) => {
     const data = req.body
 
     const validateData = validateSchema.safeParse(data);
-
+    // console.log(validateData.error.issues);
+    
     if (validateData.success === false) {
-        // return res.status(400).json({ ...validateData.error.issues });
-        return new ApiError(400, "Validation Error", ...validateData.error.issues);
+        return res.status(400).json({ ...validateData.error.issues });
+       
     }
     try {
         const updateData = await presentaddressmodels.findOneAndUpdate({ ProfileID }, { ...validateData.data }, { new: true })

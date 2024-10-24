@@ -7,9 +7,13 @@ const app = express();
 const PORT = process.env.PORT || 4100;
 
 app.use(express.json({ limit: "50mb" }));
-app.use(cors({ origin: `${process.env.ORIGIN}`, credentials: true }));
+app.use(
+  cors({
+    origin: `*`,
+    credentials: true,
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-app.use(cookieParser());
 
 app.use("/api/v1", IndexRoute);
 
