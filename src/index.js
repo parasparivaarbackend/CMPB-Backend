@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 4100;
 app.use(express.json({ limit: "50mb" }));
 app.use(
   cors({
-    origin: `https://celebrated-daffodil-6ac963.netlify.app`,
+    origin: `*`,
     credentials: true,
   })
 );
