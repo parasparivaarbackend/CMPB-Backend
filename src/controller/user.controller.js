@@ -91,10 +91,15 @@ const loginUser = async (req, res) => {
     })
     .cookie("token", token, {
       httpOnly: false,
-      secure: true,
-      sameSite: "None",
-      expires: new Date(Date.now() + 8 * 3600000),
-    });
+      secure: false,
+      path: "/",
+    })
+    .cookie("role", user.role, {
+      httpOnly: false,
+      secure: false,
+      path: "/",
+    })
+   
 
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
