@@ -57,15 +57,7 @@ const registeredUser = async (req, res) => {
   }
 
   const token = GenerateToken(savedUser._id, savedUser.email);
-  res
-    .cookie("token", token, {
-      httpOnly: false,
-      secure: true,
-    })
-    .cookie("role", savedUser.role, {
-      httpOnly: false,
-      secure: true,
-    });
+
   return res.status(StatusCodes.OK).json({
     message: "User registered successfull",
     ...data,
@@ -89,98 +81,6 @@ const loginUser = async (req, res) => {
   const token = GenerateToken(existUser._id, email);
   const user = existUser.toObject();
   delete user.password;
-
-  res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      path: "/",
-    })
-    .cookie("role", user.role, {
-      httpOnly: false,
-      secure: true,
-      path: "/",
-    })
-    .cookie("lax", "lax  httpOnly: false secure: true", {
-      httpOnly: false,
-      secure: true,
-      maxAge: 3600000, // 1 hour
-      sameSite: "lax",
-      path: "/",
-    })
-    .cookie("empty-1.1", "with path  httpOnly: false secure: true", {
-      httpOnly: false,
-      secure: true,
-      maxAge: 3600000, // 1 hour
-      path: "/",
-    })
-    .cookie("empty-1.2", "without path  httpOnly: false secure: true", {
-      httpOnly: false,
-      secure: true,
-      maxAge: 3600000, // 1 hour
-    })
-    .cookie("strict", " httpOnly: false secure: true", {
-      httpOnly: false,
-      secure: true,
-      maxAge: 3600000, // 1 hour
-      sameSite: "strict",
-      path: "/",
-    }) //part 2
-    .cookie("lax-2", "lax  httpOnly: true secure: false", {
-      httpOnly: true,
-      secure: false,
-      maxAge: 3600000, // 1 hour
-      sameSite: "lax",
-      path: "/",
-    })
-    .cookie("strict-2", " httpOnly: true secure: false", {
-      httpOnly: true,
-      secure: false,
-      maxAge: 3600000, // 1 hour
-      sameSite: "strict",
-      path: "/",
-    })
-    .cookie("A-lax", "lax  httpOnly: false secure: true", {
-      httpOnly: false,
-      secure: true,
-      maxAge: 3600000, // 1 hour
-      sameSite: "lax",
-      path: "/",
-    })
-    .cookie("A-empty-1.1", "with path  httpOnly: false secure: true", {
-      httpOnly: false,
-      secure: true,
-      maxAge: 3600000, // 1 hour
-      path: "/",
-    })
-    .cookie("A-empty-1.2", "without path  httpOnly: false secure: true", {
-      httpOnly: false,
-      secure: true,
-      maxAge: 3600000, // 1 hour
-      // No path specified, defaults to '/'
-    })
-    .cookie("A-strict", " httpOnly: false secure: true", {
-      httpOnly: false,
-      secure: true,
-      maxAge: 3600000, // 1 hour
-      sameSite: "strict",
-      path: "/",
-    })
-    .cookie("A-lax-2", "lax  httpOnly: true secure: false", {
-      httpOnly: true,
-      secure: false,
-      maxAge: 3600000, // 1 hour
-      sameSite: "lax",
-      path: "/",
-    })
-    .cookie("A-strict-2", " httpOnly: true secure: false", {
-      httpOnly: true,
-      secure: false,
-      maxAge: 3600000, // 1 hour
-      sameSite: "strict",
-      path: "/",
-    })
-    .cookie("myCookie", "myValue", { maxAge: 600000 }); // Set a cookie with a 10-minute expiration time;
 
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
