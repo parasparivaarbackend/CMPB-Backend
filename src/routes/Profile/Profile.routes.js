@@ -3,6 +3,8 @@ import { UpdateProfileDetails } from "../../controller/Profile/ProfileDetails.co
 import asyncHandler from "../../utils/asyncHandler.js";
 import AuthMiddleware from "../../middleware/Auth.middleware.js";
 import presentaddressRouter from "./PresentAddress.routes.js";
+import carrerRouter from "./carrer.routes.js";
+import educationRouter from "./education.routes.js";
 
 const ProfileRouter = Router();
 
@@ -17,5 +19,9 @@ ProfileRouter.route("/update").put(
 );
 
 ProfileRouter.use("/presentaddress", presentaddressRouter);
+
+ProfileRouter.use("/carrer", carrerRouter)
+
+ProfileRouter.use("/education", educationRouter)
 
 export default ProfileRouter;
