@@ -17,7 +17,6 @@ const ProfileSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    required: [true, "Gender is required."],
     enum: {
       values: ["male", "female"],
       message: "Gender must be either male or female.",
@@ -25,7 +24,6 @@ const ProfileSchema = new mongoose.Schema({
   },
   DOB: {
     type: String,
-    require: [true, "Date of Birth is required."],
     trim: true,
   },
   profileImage: {
@@ -36,12 +34,11 @@ const ProfileSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: "presentaddressmodels",
   },
-  education: [
+  education:
     {
       type: Schema.Types.ObjectId,
       ref: "educations",
-    },
-  ],
+    }
 });
 
 export const ProfileModel = mongoose.model("profiles", ProfileSchema);
