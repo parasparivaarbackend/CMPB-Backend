@@ -18,7 +18,10 @@ const AuthMiddleware = asyncHandler(async (req, res, next) => {
 });
 
 const UserAuth = async (req, res) => {
-  const token = req.cookies?.token;
+  const token =
+    req.cookies?.token || req.headers.authorization.replace("Bearer ", "");
+
+  console.log("check token",token);
 
   if (!token) return res.status(400).json({ message: "Unauthenticated" });
 
@@ -35,7 +38,8 @@ const UserAuth = async (req, res) => {
   req.user = user;
 };
 const AdminAuth = async (req, res) => {
-  const token = req.cookies?.token;
+  const token =
+    req.cookies?.token || req.headers.authorization.replace("Bearer ", "");
 
   if (!token) {
     return res.status(400).json({ message: "Unauthenticated" });

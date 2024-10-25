@@ -3,6 +3,8 @@ import { UserModel } from "../model/user.model.js";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { ProfileModel } from "../model/Profile/profile.model.js";
+import { oauth2 } from "googleapis/build/src/apis/oauth2/index.js";
+import axios from "axios";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -98,8 +100,7 @@ const loginUser = async (req, res) => {
       httpOnly: false,
       secure: false,
       path: "/",
-    })
-   
+    });
 
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
@@ -107,4 +108,23 @@ const loginUser = async (req, res) => {
     token,
   });
 };
-export { registeredUser, loginUser };
+
+const GoogleLogin = async (req, res) => {
+  try {
+    const { credentials } = req.query;
+    console.log(credentials);
+    console.log(req.query);
+
+    const googleToken = await oauth2.GenerateToken(credentials);
+    oauth2.setCredentials(googleResponse.tokens);
+
+    const googleResponse = await axios.get(
+      `https://www.googleapis.com/oauth2/v2/userinfo?alt=json&access_token=${googleToken.tokens.access_token}`
+    );
+    console.log(googleResponse);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { registeredUser, loginUser, GoogleLogin };
