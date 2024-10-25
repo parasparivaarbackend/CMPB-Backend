@@ -46,7 +46,7 @@ const UpdatePresentAddress = async (req, res) => {
     }
     try {
         const updateData = await presentaddressmodels.findOneAndUpdate({ ProfileID }, { ...validateData.data }, { new: true })
-        return res.status(200).json(updateData);
+        return res.status(200).json({ message:"PresentAddress Updated Succesfull",updateData});
     } catch (error) {
         console.log(error);
 
