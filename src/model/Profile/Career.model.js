@@ -27,7 +27,4 @@ const CareerSchema = new mongoose.Schema({
     },
 });
 
-
-
-
 export const careermodel = mongoose.model("careers", CareerSchema);
