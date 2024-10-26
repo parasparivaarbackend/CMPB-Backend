@@ -17,7 +17,7 @@ const CreateEducation =async(req, res)=>{
         return res.status(400).json({...validateData.error.issues})
     }
 
-    const checkEducation = await EducationModel.find({ ProfileID })
+    const checkEducation = await EducationModel.findOne({ ProfileID })
     if (checkEducation) {
         return res.status(400).json({message:"Education already Exist"})
     }

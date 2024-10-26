@@ -59,4 +59,4 @@ const HoobiesAndIntrestSchema = new mongoose.Schema({
 }, {})
 
 
-export const HoobiesAndIntrestsModel = mongoose.model("HoobiesAndIntrests", HoobiesAndIntrestSchema)
+export const HoobiesAndIntrestsModel = mongoose.model("hoobiesandintrests", HoobiesAndIntrestSchema)

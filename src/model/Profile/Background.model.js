@@ -22,12 +22,12 @@ const BackgroundSchema = new mongoose.Schema({
         trim:true
     },
     SelfWorth:{
-        type:String,
+        type:Number,
         required:true,
         trim:true
     },
     FamilyWorth:{
-        type:String,
+        type:Number,
         required:true,
         trim:true
     },
