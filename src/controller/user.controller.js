@@ -6,6 +6,7 @@ import { UserModel } from "../model/user.model.js";
 import { ProfileModel } from "../model/Profile/profile.model.js";
 import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
+import { SendMailTemplate } from "../utils/EmailHandler.js";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -110,6 +111,14 @@ const loginUser = async (req, res) => {
   });
 };
 
+const VerifyCode = async (req, res) => {
+  const { code } = req.params;
+  if (EmailToOTP) {
+    
+  }
+
+};
+
 const GoogleLogin = async (req, res) => {
   try {
     const { credentials } = req.query;
@@ -190,6 +199,26 @@ const SendOTP = async (req, res) => {
   const minute = 5;
   const expire = Date.now() + 1000 * 60 * minute;
   EmailToOTP[email] = { OTP, expire };
+
+  const item = { email, Sub: "Reset password" };
+  const template = {
+    url: "SendOTP.ejs",
+    userName: find.name,
+    OTP,
+    min,
+  };
+  const abc = await SendMailTemplate(item, template);
+
+  return res.status(200).json({
+    message: "OTP Sent",
+  });
 };
 
-export { registeredUser, loginUser, GoogleLogin, SendOTP, ChangePassword };
+export {
+  registeredUser,
+  loginUser,
+  GoogleLogin,
+  SendOTP,
+  ChangePassword,
+  VerifyCode,
+};

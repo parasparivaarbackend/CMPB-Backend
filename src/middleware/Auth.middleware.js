@@ -21,8 +21,6 @@ const UserAuth = async (req, res) => {
   const token =
     req.cookies?.token || req.headers.authorization.replace("Bearer ", "");
 
-  console.log("check token",token);
-
   if (!token) return res.status(400).json({ message: "Unauthenticated" });
 
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -33,6 +31,11 @@ const UserAuth = async (req, res) => {
 
   if (!user) {
     return res.status(400).json({ message: "Invalid User" });
+  }
+  if (user && !user.active) {
+    return res
+      .status(400)
+      .json({ message: "Please verify your account first" });
   }
 
   req.user = user;
