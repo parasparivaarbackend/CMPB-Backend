@@ -16,7 +16,10 @@ const CreateShowIntrestIn = async (req, res) => {
       }
       return res.status(200).json({ message: "Intrest Added" });
     }
-    const data = profile.IntrestedIn.filter((item) => item === IntrestedIn);
+    const data = profile.IntrestedIn.filter(
+      (item) => item.toString() === IntrestedIn
+    );
+
     if (data && data.length > 0) {
       return res.status(200).json({ message: "Intrest Already exist" });
     }
