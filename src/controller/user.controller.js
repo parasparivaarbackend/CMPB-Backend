@@ -1,9 +1,11 @@
+import { z } from "zod";
+import axios from "axios";
+import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import { UserModel } from "../model/user.model.js";
-import jwt from "jsonwebtoken";
-import { z } from "zod";
 import { ProfileModel } from "../model/Profile/profile.model.js";
-
+import { oauth2Client } from "../utils/GoogleConfig.js";
+import { GoogleModel } from "../model/GoogleLogin.model.js";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -33,7 +35,7 @@ const registeredUser = async (req, res) => {
     ],
   });
   if (existUser) {
-    return res.status(StatusCodes.OK).json({
+    return res.status(400).json({
       message: "User already Exist",
     });
   }
@@ -58,15 +60,7 @@ const registeredUser = async (req, res) => {
   }
 
   const token = GenerateToken(savedUser._id, savedUser.email);
-  res
-    .cookie("token", token, {
-      httpOnly: false,
-      secure: true,
-    })
-    .cookie("role", savedUser.role, {
-      httpOnly: false,
-      secure: true,
-    });
+
   return res.status(StatusCodes.OK).json({
     message: "User registered successfull",
     ...data,
@@ -92,6 +86,12 @@ const loginUser = async (req, res) => {
   delete user.password;
 
   res
+    .cookie("myCookie", "cookieValue", {
+      httpOnly: false,
+      secure: true,
+      sameSite: "Lax",
+      expires: new Date(Date.now() + 8 * 3600000),
+    })
     .cookie("token", token, {
       httpOnly: false,
       secure: false,
@@ -101,8 +101,7 @@ const loginUser = async (req, res) => {
       httpOnly: false,
       secure: false,
       path: "/",
-    })
-   
+    });
 
   return res.status(StatusCodes.OK).json({
     message: "Login Succesfull",
@@ -110,4 +109,87 @@ const loginUser = async (req, res) => {
     token,
   });
 };
-export { registeredUser, loginUser };
+
+const GoogleLogin = async (req, res) => {
+  try {
+    const { credentials } = req.query;
+
+    const googleToken = await oauth2Client.getToken(credentials);
+    oauth2Client.setCredentials(googleToken.tokens);
+
+    const googleResponse = await axios.get(
+      `https://www.googleapis.com/oauth2/v2/userinfo?alt=json&access_token=${googleToken.tokens.access_token}`
+    );
+    const user = await GoogleModel.findOne({
+      email: googleResponse.data.email,
+    });
+
+    if (user) {
+      const token = GenerateToken(user._id, user.email);
+      const data = user.toObject();
+      delete data.password;
+      return res.status(200).json({
+        message: "Login successfull",
+        ...data,
+        token,
+      });
+    }
+    const newUser = new GoogleModel({ email: googleResponse.data.email });
+
+    const ProfileData = await ProfileModel.create({
+      firstName: googleResponse.data.given_name,
+      lastName: googleResponse.data.family_name,
+      profileImage: googleResponse.data.picture,
+    });
+
+    if (!ProfileData)
+      return res.status(500).json({ message: "Failed to Login" });
+
+    newUser.ProfileID = ProfileData._id;
+    await newUser.save();
+    const savedUser = newUser.toObject();
+    delete savedUser.password;
+    const token = GenerateToken(savedUser._id, savedUser.email);
+
+    if (!savedUser)
+      return res.status(500).json({ message: "Failed to register user" });
+
+    return res
+      .status(200)
+      .json({ message: "Signup Successfully", ...savedUser, token });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error in Google login" });
+  }
+};
+
+const ChangePassword = async (req, res) => {
+  const { password } = req.body;
+  try {
+    await UserModel.findByIdAndUpdate(
+      req.user._id,
+      { password },
+      { new: true }
+    );
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Failed to change password" });
+  }
+};
+
+let EmailToOTP = {};
+
+const SendOTP = async (req, res) => {
+  const { email } = req.body;
+  const user = await UserModel.findOne({ email });
+  if (!user) return res.status(400).json({ message: "User do not exist" });
+
+  const OTP = Math.floor(1000 + Math.random() * 9000);
+  const minute = 5;
+  const expire = Date.now() + 1000 * 60 * minute;
+  EmailToOTP[email] = { OTP, expire };
+};
+
+export { registeredUser, loginUser, GoogleLogin, SendOTP, ChangePassword };

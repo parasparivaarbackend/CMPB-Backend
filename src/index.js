@@ -9,13 +9,15 @@ const PORT = process.env.PORT || 4100;
 app.use(express.json({ limit: "50mb" }));
 app.use(
   cors({
-    origin: `https://celebrated-daffodil-6ac963.netlify.app`,
+    origin: [
+      `http://localhost:3000`,
+      `https://celebrated-daffodil-6ac963.netlify.app`,
+    ],
     credentials: true,
   })
 );
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
-
 app.use("/api/v1", IndexRoute);
 
 dbConnect()
