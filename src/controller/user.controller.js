@@ -14,10 +14,10 @@ const UserSchemaValidation = z.object({
   email: z.string().email(),
   firstName: z.string().min(2),
   lastName: z.string().min(2),
-  phone: z.string().min(10).max(12),
-  DOB: z.string().min(2),
+  phone: z.string().min(10).max(12).optional(),
+  DOB: z.string().min(2).optional(),
   password: z.string().min(6).max(16),
-  gender: z.enum(["male", "female"]),
+  gender: z.enum(["male", "female"]).optional(),
 });
 
 const registeredUser = async (req, res) => {
