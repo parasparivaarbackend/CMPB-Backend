@@ -23,4 +23,4 @@ const LifeStyleSchema = new mongoose.Schema({
   },
 });
 
-export const LifeStyleModel = mongoose.model("lifeStyles", LifeStyleSchema);
+export const LifeStyleModel = mongoose.model("lifestyles", LifeStyleSchema);

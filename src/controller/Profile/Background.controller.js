@@ -6,8 +6,8 @@ const BackgroundValidate = z.object({
     Religion: z.string().min(2),
     Caste: z.string().min(2),
     SubCast: z.string().min(2),
-    SelfWorth: z.string().min(2),
-    FamilyWorth: z.string().min(2)
+    SelfWorth: z.number().min(2),
+    FamilyWorth: z.number().min(2)
 })
 
 const CreateBackground = async(req, res)=>{
