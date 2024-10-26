@@ -55,6 +55,8 @@ const registeredUser = async (req, res) => {
   const savedUser = await user.save();
   const data = savedUser.toObject();
   delete data.password;
+  profileData.UserID = data._id;
+  await profileData.save();
 
   if (!savedUser) {
     return res.status(500).json({ message: "Failed to register user" });
@@ -114,9 +116,7 @@ const loginUser = async (req, res) => {
 const VerifyCode = async (req, res) => {
   const { code } = req.params;
   if (EmailToOTP) {
-    
   }
-
 };
 
 const GoogleLogin = async (req, res) => {
