@@ -1,13 +1,21 @@
 import { Router } from "express";
-import { CreatePartnerExpectation, UpdatePartnerExpectation } from "../../controller/Profile/PartnerExpectation.controller.js";
-import AuthMiddleware from "../../middleware/Auth.middleware.js"
+import {
+  CreatePartnerExpectation,
+  UpdatePartnerExpectation,
+} from "../../controller/Profile/PartnerExpectation.controller.js";
+import { UserAuthMiddleware } from "../../middleware/Auth.middleware.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 
+const PartnerExpectationRouter = Router();
 
-const PartnerExpectationRouter = Router()
+PartnerExpectationRouter.route("/create").post(
+  UserAuthMiddleware,
+  asyncHandler(CreatePartnerExpectation)
+);
 
-PartnerExpectationRouter.route("/create").post(AuthMiddleware, asyncHandler(CreatePartnerExpectation))
+PartnerExpectationRouter.route("/update").put(
+  UserAuthMiddleware,
+  asyncHandler(UpdatePartnerExpectation)
+);
 
-PartnerExpectationRouter.route("/update").put(AuthMiddleware, asyncHandler(UpdatePartnerExpectation))
-
-export { PartnerExpectationRouter }
+export { PartnerExpectationRouter };
