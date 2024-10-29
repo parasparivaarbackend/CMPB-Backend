@@ -3,7 +3,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { UserModel } from "../model/user.model.js";
 
 const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
-  const role = req.cookies?.role;
+  const role = req.cookies?.role || req.headers.role;
 
   if (role !== "user")
     return res.status(400).json({ message: "Unauthorize user" });
@@ -27,12 +27,13 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
       .json({ message: "Please verify your account first" });
 
   req.user = user;
-  next()
+
+  next();
 });
 const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
-  const role = req.cookies?.role;
+  const role = req.cookies?.role || req.headers.role;
 
-  if (role !== "admin" )
+  if (role !== "admin")
     return res.status(400).json({ message: "Unauthorize user" });
 
   const token =
@@ -51,8 +52,8 @@ const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
       .status(400)
       .json({ message: "Please verify your account first" });
   }
-  
+
   req.admin = admin;
-  next()
+  next();
 });
 export { UserAuthMiddleware, AdminAuthMiddleware };
