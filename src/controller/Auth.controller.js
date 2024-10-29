@@ -7,6 +7,7 @@ import { ProfileModel } from "../model/Profile/profile.model.js";
 import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
+import mongoose from "mongoose";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -28,7 +29,6 @@ const registeredUser = async (req, res) => {
   if (validateData.success === false) {
     return res.status(400).json({ ...validateData.error.issues });
   }
-
   const existUser = await UserModel.findOne({
     $or: [
       { email: validateData.data.email },
@@ -40,35 +40,44 @@ const registeredUser = async (req, res) => {
       message: "User already Exist",
     });
   }
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const user = new UserModel(validateData.data);
+    const profileData = new ProfileModel({ UserID: user._id });
+    user.ProfileID = profileData._id;
+    await profileData.save();
+    const savedUser = await user.save();
+    const data = savedUser.toObject();
+    delete data.password;
 
-  const user = new UserModel(validateData.data);
-  console.log("user before save", user);
+    const token = GenerateToken(data._id, data.email);
 
-  const profileData = await ProfileModel.create(validateData.data);
-  console.log("Profile created", profileData);
+    // await SendMailTemplate()
 
-  if (!profileData) {
-    return res.status(500).json({ message: "Failed to register user" });
+    res
+      .cookie("token", token, {
+        httpOnly: false,
+        secure: false,
+        path: "/",
+      })
+      .cookie("role", data.role, {
+        httpOnly: false,
+        secure: false,
+        path: "/",
+      });
+
+    return res.status(200).json({
+      message: "User registered successfull",
+      ...data,
+      token,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    console.error("Transaction aborted due to an error:", error);
+  } finally {
+    session.endSession();
   }
-  user.ProfileID = profileData._id;
-
-  const savedUser = await user.save();
-  const data = savedUser.toObject();
-  delete data.password;
-  profileData.UserID = data._id;
-  await profileData.save();
-
-  if (!savedUser) {
-    return res.status(500).json({ message: "Failed to register user" });
-  }
-
-  const token = GenerateToken(savedUser._id, savedUser.email);
-
-  return res.status(StatusCodes.OK).json({
-    message: "User registered successfull",
-    ...data,
-    token,
-  });
 };
 
 const loginUser = async (req, res) => {
@@ -77,6 +86,11 @@ const loginUser = async (req, res) => {
   const existUser = await UserModel.findOne({ email });
   if (!existUser) {
     return res.status(400).json({ message: "User Not Found" });
+  }
+  if (!existUser.active) {
+    return res
+      .status(400)
+      .json({ message: "Please verify your account first" });
   }
 
   const checkPassword = await existUser.comparePassword(password);
@@ -89,12 +103,6 @@ const loginUser = async (req, res) => {
   delete user.password;
 
   res
-    .cookie("myCookie", "cookieValue", {
-      httpOnly: false,
-      secure: true,
-      sameSite: "Lax",
-      expires: new Date(Date.now() + 8 * 3600000),
-    })
     .cookie("token", token, {
       httpOnly: false,
       secure: false,
@@ -202,24 +210,37 @@ const ChangePassword = async (req, res) => {
 
 let EmailToOTP = {};
 
+const generateOTP = () => {
+  const OTP = Math.floor(1000 + Math.random() * 9000);
+  const minute = 5;
+  const expire = Date.now() + 1000 * 60 * minute;
+  return { OTP, minute, expire };
+};
+
 const SendOTP = async (req, res) => {
   const { email } = req.body;
   const user = await UserModel.findOne({ email });
   if (!user) return res.status(400).json({ message: "User do not exist" });
 
-  const OTP = Math.floor(1000 + Math.random() * 9000);
-  const minute = 5;
-  const expire = Date.now() + 1000 * 60 * minute;
+  const { OTP, minute, expire } = generateOTP();
   EmailToOTP[email] = { OTP, expire };
 
-  const item = { email, Sub: "Reset password" };
+  const item = { email, Sub: "Reset password", text: OTP };
   const template = {
-    url: "SendOTP.ejs",
-    userName: find.name,
+    url: "SendEmailOTP.ejs",
+    userName: `${user.firstName} ${user.lastName}`,
     OTP,
-    min,
+    minute,
   };
+  console.log("OTP", OTP);
+  console.log("minute", minute);
+  console.log("expire", expire);
+  console.log("item", item);
+  console.log("temp", template);
+
   const abc = await SendMailTemplate(item, template);
+
+  console.log("abc", abc);
 
   return res.status(200).json({
     message: "OTP Sent",
