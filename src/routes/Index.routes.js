@@ -3,6 +3,7 @@ import AuthRouter from "./Auth.routes.js";
 import ProfileRouter from "./Profile/Profile.routes.js";
 import { ContactUsRouter } from "./Contact/ContactUs.routes.js";
 import UserRouter from "./User.routes.js";
+import { EventRouter } from "./EventDetails/EventDetails.routes.js";
 
 const IndexRoute = Router();
 
