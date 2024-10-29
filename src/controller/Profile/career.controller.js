@@ -49,7 +49,7 @@ const UpdateCarrer = async(req, res)=>{
     }
     try {
         const updateData = await careermodel.findOneAndUpdate({ ProfileID }, { ...validateData.data }, { new: true })
-        return res.status(200).json(updateData);
+        return res.status(200).json({ message: "Carrer Detail Updated Succesfull", updateData });
     } catch (error) {
         console.log(error);
 
