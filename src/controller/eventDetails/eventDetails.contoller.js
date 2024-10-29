@@ -1,4 +1,4 @@
-
+import { eventdetails } from "../../model/Events/eventdetails.model.js";
 
 
 const CreateEventDetails = async(req, res)=>{
