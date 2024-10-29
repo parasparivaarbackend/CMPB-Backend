@@ -1,7 +1,10 @@
 import { Router } from "express";
-import { getProfileData, UpdateProfileDetails } from "../../controller/Profile/ProfileDetails.controller.js";
+import {
+  getProfileData,
+  UpdateProfileDetails,
+} from "../../controller/Profile/ProfileDetails.controller.js";
 import asyncHandler from "../../utils/asyncHandler.js";
-import AuthMiddleware from "../../middleware/Auth.middleware.js";
+import { UserAuthMiddleware } from "../../middleware/Auth.middleware.js";
 import presentaddressRouter from "./PresentAddress.routes.js";
 import carrerRouter from "./carrer.routes.js";
 import educationRouter from "./education.routes.js";
@@ -25,42 +28,40 @@ const ProfileRouter = Router();
 //   asyncHandler(CreateProfileDetails)
 // );
 ProfileRouter.route("/update").put(
-  [AuthMiddleware],
+  [UserAuthMiddleware],
   asyncHandler(UpdateProfileDetails)
 );
 ProfileRouter.route("/get").get(
-  [AuthMiddleware],
+  [UserAuthMiddleware],
   asyncHandler(getProfileData)
 );
 
 ProfileRouter.use("/presentaddress", presentaddressRouter);
 
-ProfileRouter.use("/carrer", carrerRouter)
+ProfileRouter.use("/carrer", carrerRouter);
 
-ProfileRouter.use("/education", educationRouter)
+ProfileRouter.use("/education", educationRouter);
 
-ProfileRouter.use("/physicalattribute", PhysicalAttributerouter)
+ProfileRouter.use("/physicalattribute", PhysicalAttributerouter);
 
-ProfileRouter.use("/languages", Languagerouter)
+ProfileRouter.use("/languages", Languagerouter);
 
-ProfileRouter.use("/hoobiesandintrest", HoobiesAndIntrestrouter)
+ProfileRouter.use("/hoobiesandintrest", HoobiesAndIntrestrouter);
 
-ProfileRouter.use("/personalattitude", PersonalAttitudeRouter)
+ProfileRouter.use("/personalattitude", PersonalAttitudeRouter);
 
-ProfileRouter.use("/residencyinfo", ResidencyInfoRouter)
+ProfileRouter.use("/residencyinfo", ResidencyInfoRouter);
 
-ProfileRouter.use("/background", BackgroundRouter)
+ProfileRouter.use("/background", BackgroundRouter);
 
-ProfileRouter.use("/astronomic", AstronomicRouter)
+ProfileRouter.use("/astronomic", AstronomicRouter);
 
-ProfileRouter.use("/permanentaddress", PermanentAddressRouter)
+ProfileRouter.use("/permanentaddress", PermanentAddressRouter);
 
-ProfileRouter.use("/familyinfo", FamilyInfoRouter)
+ProfileRouter.use("/familyinfo", FamilyInfoRouter);
 
-ProfileRouter.use("/partnerexpectation", PartnerExpectationRouter)
+ProfileRouter.use("/partnerexpectation", PartnerExpectationRouter);
 
-ProfileRouter.use("/showintrestin", ShowIntrestInRouter)
-
-
+ProfileRouter.use("/showintrestin", ShowIntrestInRouter);
 
 export default ProfileRouter;

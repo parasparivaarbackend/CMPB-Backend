@@ -1,12 +1,21 @@
 import { Router } from "express";
-import { CreateBackground, UpdateBackground } from "../../controller/Profile/Background.controller.js";
-import AuthMiddleware from '../../middleware/Auth.middleware.js'
+import {
+  CreateBackground,
+  UpdateBackground,
+} from "../../controller/Profile/Background.controller.js";
+import { UserAuthMiddleware } from "../../middleware/Auth.middleware.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 
-const BackgroundRouter = Router()
+const BackgroundRouter = Router();
 
-BackgroundRouter.route("/create").post(AuthMiddleware, asyncHandler(CreateBackground))
+BackgroundRouter.route("/create").post(
+  UserAuthMiddleware,
+  asyncHandler(CreateBackground)
+);
 
-BackgroundRouter.route("/update").put(AuthMiddleware, asyncHandler(UpdateBackground))
+BackgroundRouter.route("/update").put(
+  UserAuthMiddleware,
+  asyncHandler(UpdateBackground)
+);
 
-export { BackgroundRouter }
+export { BackgroundRouter };
