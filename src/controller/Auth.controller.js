@@ -84,6 +84,12 @@ const loginUser = async (req, res) => {
     return res.status(400).json({ message: "Password does not match" });
   }
 
+  if (!existUser.active) {
+    return res
+      .status(400)
+      .json({ message: "Please verify your account first" });
+  }
+
   const token = GenerateToken(existUser._id, email);
   const user = existUser.toObject();
   delete user.password;
