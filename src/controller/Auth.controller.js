@@ -194,6 +194,7 @@ const SendOTP = async (req, res) => {
   const { email } = req.body;
   const user = await UserModel.findOne({ email });
   if (!user) return res.status(400).json({ message: "User do not exist" });
+  console.log("user", user);
 
   const OTP = Math.floor(1000 + Math.random() * 9000);
   const minute = 5;
@@ -203,11 +204,12 @@ const SendOTP = async (req, res) => {
   const item = { email, Sub: "Reset password" };
   const template = {
     url: "SendEmailOTP.ejs",
-    userName: user.name,
+    userName: `${user.firstName} ${user.lastName}`,
     OTP,
     minute,
   };
   const abc = await SendMailTemplate(item, template);
+  console.log(abc);
 
   return res.status(200).json({
     message: "OTP Sent",

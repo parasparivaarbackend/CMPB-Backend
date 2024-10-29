@@ -29,6 +29,7 @@ const getUserById = async (req, res) => {
   try {
     const data = await ProfileModel.findById(id);
     console.log(data);
+    
   } catch (error) {
     console.log(error);
   }

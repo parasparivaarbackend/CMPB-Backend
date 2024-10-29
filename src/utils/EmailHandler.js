@@ -9,14 +9,19 @@ export async function SendMailTemplate(item, template) {
         pass: process.env.Auth_pass,
       },
     });
+    // console.log("mailTransporter", mailTransporter);
+
     let mailingdetail = {
       from: process.env.Auth_mail,
       to: item.email,
       subject: item.Sub,
-      text: item.text,
+      template,
     };
+    console.log("mailingdetail", mailingdetail);
     mailTransporter.sendMail(mailingdetail, function (err, data) {
       if (err) {
+        console.log(err);
+
         console.log(err.message);
       }
     });
