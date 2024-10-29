@@ -20,4 +20,6 @@ const getAllUserByAdmin = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {};
+
 export { getAllUserByAdmin };

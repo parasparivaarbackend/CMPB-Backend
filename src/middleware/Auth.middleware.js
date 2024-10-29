@@ -3,11 +3,6 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { UserModel } from "../model/user.model.js";
 
 const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
-  const role = req.cookies?.role;
-
-  if (role !== "user")
-    return res.status(400).json({ message: "Unauthorize user" });
-
   const token =
     req.cookies?.token || req.headers.authorization.replace("Bearer ", "");
 
@@ -21,19 +16,20 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
 
   if (!user) return res.status(400).json({ message: "Invalid User" });
 
+  if (user.role !== "user")
+    return res.status(400).json({ message: "Unauthorize user" });
+
   if (user && !user.active)
     return res
       .status(400)
       .json({ message: "Please verify your account first" });
 
   req.user = user;
-  next()
+
+  next();
 });
 const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
-  const role = req.cookies?.role;
-
-  if (role !== "admin" )
-    return res.status(400).json({ message: "Unauthorize user" });
+  const role = req.cookies?.role || req.headers.role;
 
   const token =
     req.cookies?.token || req.headers.authorization.replace("Bearer ", "");
@@ -46,13 +42,17 @@ const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
     "-password -__v"
   );
   if (!admin) return res.status(400).json({ message: "Invalid admin" });
+
+  if (admin.role !== "admin" || admin.role !== "user")
+    return res.status(400).json({ message: "Unauthorize user" });
+
   if (admin && !admin.active) {
     return res
       .status(400)
       .json({ message: "Please verify your account first" });
   }
-  
+
   req.admin = admin;
-  next()
+  next();
 });
 export { UserAuthMiddleware, AdminAuthMiddleware };
