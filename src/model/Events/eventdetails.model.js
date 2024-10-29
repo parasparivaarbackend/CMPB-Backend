@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, {Schema} from 'mongoose'
 
 const eventDetailsSchema = new mongoose.Schema({
     availableDates: {
@@ -21,6 +21,10 @@ const eventDetailsSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    clientID: [{
+        type: Schema.Types.ObjectId,
+        ref:"user"
+    }],
 }, { timestamps: true })
 
 
