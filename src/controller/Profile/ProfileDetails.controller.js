@@ -40,6 +40,18 @@ const getProfileData = async (req, res) => {
         },
       },
       {
+        $project: {
+          basicDetails: {
+            _id: "$_id",
+            firstName: "$firstName",
+            lastName: "$lastName",
+            gender: "$gender",
+            DOB: "$DOB",
+            profileImage: "$profileImage",
+          },
+        },
+      },
+      {
         $lookup: {
           from: "presentaddressmodels",
           localField: "PresentAddress",

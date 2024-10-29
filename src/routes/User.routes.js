@@ -8,9 +8,13 @@ const UserRouter = Router();
 
 UserRouter.use("/profile", ProfileRouter);
 
-UserRouter.route("/getAllUserAdmin?").post(
+UserRouter.route("/getAllUserAdmin?").get(
   AdminAuthMiddleware,
   asyncHandler(getAllUserByAdmin)
 );
+
+UserRouter.route("/getUser/:id").get(AdminAuthMiddleware,asyncHandler())
+
+
 
 export default UserRouter;
