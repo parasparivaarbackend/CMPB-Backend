@@ -17,12 +17,12 @@ export async function SendMailTemplate(item, template) {
       subject: item.Sub,
       template,
     };
+
     console.log("mailingdetail", mailingdetail);
+
     mailTransporter.sendMail(mailingdetail, function (err, data) {
       if (err) {
-        console.log(err);
-
-        console.log(err.message);
+        console.log("mail ka error ", err.message);
       }
     });
   } catch (error) {

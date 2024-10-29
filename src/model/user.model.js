@@ -3,6 +3,31 @@ import bcrypt from "bcryptjs";
 
 const UserSchema = new mongoose.Schema(
   {
+    firstName: {
+      type: String,
+      required: [true, "First name is required."],
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      required: [true, "Last name is required."],
+      trim: true,
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female"],
+        message: "Gender must be either male or female.",
+      },
+    },
+    DOB: {
+      type: String,
+      trim: true,
+    },
+    profileImage: {
+      type: String,
+      trim: true,
+    },
     email: {
       type: String,
       required: [true, "email is required"],
@@ -39,8 +64,8 @@ const UserSchema = new mongoose.Schema(
     },
     ProfileID: {
       type: Schema.Types.ObjectId,
-      ref: "profiles"
-    }
+      ref: "profiles",
+    },
   },
   { timestamps: true }
 );
