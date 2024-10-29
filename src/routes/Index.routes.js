@@ -3,6 +3,7 @@ import AuthRouter from "./Auth.routes.js";
 import AdminRouter from "./Admin.routes.js";
 import ProfileRouter from "./Profile/Profile.routes.js";
 import { ContactUsRouter } from "./Contact/ContactUs.routes.js";
+import { EventRouter } from "./EventDetails/EventDetails.routes.js";
 
 const IndexRoute = Router();
 
@@ -15,5 +16,6 @@ IndexRoute.use("/admin", AdminRouter);
 IndexRoute.use("/profile", ProfileRouter);
 
 IndexRoute.use("/contact", ContactUsRouter);
+IndexRoute.use("/events", EventRouter);
 
 export default IndexRoute;
