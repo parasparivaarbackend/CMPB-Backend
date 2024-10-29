@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "../utils/asyncHandler.js";
 import { UserModel } from "../model/user.model.js";
 
-const UserAuthMiddleware = asyncHandler(async (req, res) => {
+const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
   const role = req.cookies?.role;
 
   if (role !== "user")
@@ -27,11 +27,12 @@ const UserAuthMiddleware = asyncHandler(async (req, res) => {
       .json({ message: "Please verify your account first" });
 
   req.user = user;
+  next()
 });
-const AdminAuthMiddleware = asyncHandler(async (req, res) => {
+const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
   const role = req.cookies?.role;
 
-  if (role !== "admin" || role !== "user")
+  if (role !== "admin" )
     return res.status(400).json({ message: "Unauthorize user" });
 
   const token =
@@ -44,12 +45,14 @@ const AdminAuthMiddleware = asyncHandler(async (req, res) => {
   const admin = await UserModel.findById(decodedToken._id).select(
     "-password -__v"
   );
-  if (!user) return res.status(400).json({ message: "Invalid User" });
-  if (user && !user.active) {
+  if (!admin) return res.status(400).json({ message: "Invalid admin" });
+  if (admin && !admin.active) {
     return res
       .status(400)
       .json({ message: "Please verify your account first" });
   }
-  req.user = user;
+  
+  req.admin = admin;
+  next()
 });
 export { UserAuthMiddleware, AdminAuthMiddleware };
