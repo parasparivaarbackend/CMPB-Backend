@@ -13,19 +13,19 @@ export const ProfileDetailSchemaValidation = z.object({
 const UpdateProfileDetails = async (req, res) => {
   const data = req.body;
   const validateData = ProfileDetailSchemaValidation.safeParse(data);
-  console.log(validateData);
+
   if (validateData.success === false) {
     return res.status(400).json({ ...validateData.error.issues });
   }
   try {
     const updatedProfile = await ProfileModel.findByIdAndUpdate(
-      { _id: data.ProfileID },
+      { _id: req.user.ProfileID.toString() },
       { ...data }
     );
     if (!updatedProfile) {
       return res.status(500).json({ message: "Failed to update Profile Data" });
     }
-    return res.json(200).json({ message: "Data updated Successfully" });
+    return res.status(200).json({ message: "Data updated Successfully" });
   } catch (error) {
     console.error(error);
   }
@@ -37,6 +37,18 @@ const getProfileData = async (req, res) => {
       {
         $match: {
           _id: req.user.ProfileID,
+        },
+      },
+      {
+        $project: {
+          basicDetails: {
+            _id: "$_id",
+            firstName: "$firstName",
+            lastName: "$lastName",
+            gender: "$gender",
+            DOB: "$DOB",
+            profileImage: "$profileImage",
+          },
         },
       },
       {

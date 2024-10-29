@@ -84,6 +84,12 @@ const loginUser = async (req, res) => {
     return res.status(400).json({ message: "Password does not match" });
   }
 
+  if (!existUser.active) {
+    return res
+      .status(400)
+      .json({ message: "Please verify your account first" });
+  }
+
   const token = GenerateToken(existUser._id, email);
   const user = existUser.toObject();
   delete user.password;
@@ -111,24 +117,6 @@ const loginUser = async (req, res) => {
     ...user,
     token,
   });
-};
-
-const VerifyCode = async (req, res) => {
-  const { code } = req.params;
-  const { email } = req.body;
-  if (
-    EmailToOTP[email] ||
-    EmailToOTP.email.OTP != code ||
-    EmailToOTP.email.expire < Date.now()
-  ) {
-    return res
-      .status(400)
-      .json({ message: "Incorrect Verification code or code is expire" });
-  }
-  const user = await UserModel.findOne({ email });
-  user.active = true;
-  await user.save();
-  return res.status(200).json({ message: "User verified successfully" });
 };
 
 const GoogleLogin = async (req, res) => {
@@ -214,16 +202,34 @@ const SendOTP = async (req, res) => {
 
   const item = { email, Sub: "Reset password" };
   const template = {
-    url: "SendOTP.ejs",
-    userName: find.name,
+    url: "SendEmailOTP.ejs",
+    userName: user.name,
     OTP,
-    min,
+    minute,
   };
   const abc = await SendMailTemplate(item, template);
 
   return res.status(200).json({
     message: "OTP Sent",
   });
+};
+
+const VerifyCode = async (req, res) => {
+  const { code } = req.params;
+  const { email } = req.body;
+  if (
+    EmailToOTP[email] ||
+    EmailToOTP.email.OTP != code ||
+    EmailToOTP.email.expire < Date.now()
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Incorrect Verification code or code is expire" });
+  }
+  const user = await UserModel.findOne({ email });
+  user.active = true;
+  await user.save();
+  return res.status(200).json({ message: "User verified successfully" });
 };
 
 export {

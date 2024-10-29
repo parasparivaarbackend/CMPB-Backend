@@ -29,8 +29,6 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
   next();
 });
 const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
-  const role = req.cookies?.role || req.headers.role;
-
   const token =
     req.cookies?.token || req.headers.authorization.replace("Bearer ", "");
 
@@ -41,9 +39,10 @@ const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
   const admin = await UserModel.findById(decodedToken._id).select(
     "-password -__v"
   );
+
   if (!admin) return res.status(400).json({ message: "Invalid admin" });
 
-  if (admin.role !== "admin" || admin.role !== "user")
+  if (admin.role !== "admin" && admin.role !== "user")
     return res.status(400).json({ message: "Unauthorize user" });
 
   if (admin && !admin.active) {
