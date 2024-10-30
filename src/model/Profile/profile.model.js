@@ -9,6 +9,7 @@ const ProfileSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: "presentaddressmodels",
   },
+
   education: {
     type: Schema.Types.ObjectId,
     ref: "educations",
