@@ -475,11 +475,11 @@ const getProfileData = async (req, res) => {
     if (!profileDetails) {
       return res.status(400).json({ message: "User do not exist" });
     }
-    console.log(req.user);
 
-    return res
-      .status(200)
-      .json({ message: "User Profile Data", profileDetails, user: req.user });
+    return res.status(200).json({
+      message: "User Profile Data",
+      profileDetails: { ...profileDetails[0], user: req.user },
+    });
   } catch (error) {
     return res.status(500).json({ message: "Failed to get UserData" });
   }
