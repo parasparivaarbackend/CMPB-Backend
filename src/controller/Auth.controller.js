@@ -8,10 +8,13 @@ import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
 import mongoose from "mongoose";
+import { log } from "console";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
+
+const emailSchema = z.string().email("Invalid email");
 
 const UserSchemaValidation = z.object({
   email: z.string().email(),
@@ -53,7 +56,6 @@ const registeredUser = async (req, res) => {
 
     const token = GenerateToken(data._id, data.email);
 
-    // await SendMailTemplate()
     const { OTP, min, expire } = generateOTP();
     EmailToOTP[validateData.data.email] = { OTP, expire };
 
@@ -70,7 +72,7 @@ const registeredUser = async (req, res) => {
       min,
     };
 
-    // await SendMailTemplate(item, template);
+    await SendMailTemplate(item, template);
 
     res
       .cookie("token", token, {
@@ -213,22 +215,6 @@ const ChangePassword = async (req, res) => {
   }
 };
 
-const forgetPassword = async (req, res) => {
-  const emailSchema = z.object({
-    email: z.string().email("Invalid email format"),
-  });
-
-  const { email } = emailSchema.parse(req.body);
-  try {
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid User" });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 let EmailToOTP = {};
 
 const generateOTP = () => {
@@ -239,13 +225,11 @@ const generateOTP = () => {
 };
 
 const SendOTP = async (req, res) => {
-  const emailSchema = z.string().email("Invalid email");
-
   const data = emailSchema.safeParse(req.body.email);
-
+  const email = data.data;
   if (!data.success) return res.status(400).json({ message: "Invaild Email" });
 
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email: data.data });
 
   if (!user) return res.status(400).json({ message: "User do not exist" });
 
@@ -270,12 +254,11 @@ const SendOTP = async (req, res) => {
 
 const VerifyCode = async (req, res) => {
   const { code } = req.params;
-  const { email } = req.body;
-  if (
-    EmailToOTP[email] ||
-    EmailToOTP.email.OTP != code ||
-    EmailToOTP.email.expire < Date.now()
-  ) {
+  const data = emailSchema.safeParse(req.body.email);
+  const email = data.data;
+  if (!data.success) return res.status(400).json({ message: "Invaild Email" });
+
+  if (EmailToOTP[email].OTP != code || EmailToOTP[email].expire < Date.now()) {
     return res
       .status(400)
       .json({ message: "Incorrect Verification code or code is expire" });
