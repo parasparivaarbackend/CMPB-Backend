@@ -44,22 +44,11 @@ const getProfileData = async (req, res) => {
           _id: req.user.ProfileID,
         },
       },
-      {
-        $project: {
-          basicDetails: {
-            _id: "$_id",
-            firstName: "$firstName",
-            lastName: "$lastName",
-            gender: "$gender",
-            DOB: "$DOB",
-            profileImage: "$profileImage",
-          },
-        },
-      },
+
       {
         $lookup: {
           from: "presentaddressmodels",
-          localField: "PresentAddress",
+          localField: "_id",
           foreignField: "profileid",
           as: "addressDetails",
           pipeline: [

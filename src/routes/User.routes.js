@@ -8,6 +8,7 @@ import {
 } from "../controller/user.controller.js";
 import {
   AdminAuthMiddleware,
+  Auth,
   UserAuthMiddleware,
 } from "../middleware/Auth.middleware.js";
 
@@ -24,9 +25,6 @@ UserRouter.route("/getActiveUser").get(
   UserAuthMiddleware,
   asyncHandler(getActiveUser)
 );
-UserRouter.route("/getUser/:id").get(
-  AdminAuthMiddleware,
-  asyncHandler(getUserById)
-);
+UserRouter.route("/check").get(Auth.UserAuth, asyncHandler(getUserById));
 
 export default UserRouter;

@@ -8,7 +8,6 @@ import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
 import mongoose from "mongoose";
-import { log } from "console";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -200,13 +199,32 @@ const GoogleLogin = async (req, res) => {
 };
 
 const ChangePassword = async (req, res) => {
-  const { password } = req.body;
+  const { oldPassword, password } = req.body;
+
+  if (oldPassword.trim() === password.trim()) {
+    return res.status(400).json({
+      message:
+        "The new password cannot be the same as the old password. Please choose a different one.",
+    });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({
+      message:
+        "Your password must be at least 6 characters long and include a mix of uppercase letters, lowercase letters, numbers, and special characters. Please try again.",
+    });
+  }
   try {
-    await UserModel.findByIdAndUpdate(
-      req.user._id,
-      { password },
-      { new: true }
-    );
+    const user = await UserModel.findById(req.user._id);
+    const result = await user.comparePassword(oldPassword);
+
+    if (!result) {
+      return res.status(400).json({
+        messages: "Old Password is Wrong",
+      });
+    }
+    user.password = password;
+    await user.save();
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
@@ -269,6 +287,41 @@ const VerifyCode = async (req, res) => {
   return res.status(200).json({ message: "User verified successfully" });
 };
 
+const newPassword = async (req, res) => {
+  try {
+    const data = emailSchema.safeParse(req.body.email);
+    const email = data.data;
+    if (!data.success)
+      return res.status(400).json({ message: "Invaild Email" });
+
+    const newPassword = req.body.newPassword;
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        message:
+          "Your password must be at least 6 characters long and include a mix of uppercase letters, lowercase letters, numbers, and special characters. Please try again.",
+      });
+    }
+    try {
+      const user = await UserModel.findOne({ email });
+
+      if (!user) return res.status(400).json({ message: "Invalid User" });
+
+      user.password = newPassword;
+      await user.save();
+
+      delete EmailToOTP[email];
+      return res.status(200).json({ message: "Password Reset Successfully" });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: "Failed to reset password" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export {
   registeredUser,
   loginUser,
@@ -276,4 +329,5 @@ export {
   SendOTP,
   ChangePassword,
   VerifyCode,
+  newPassword,
 };
