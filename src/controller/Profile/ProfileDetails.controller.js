@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { ProfileModel } from "../../model/Profile/profile.model.js";
-import { careermodel } from "../../model/Profile/Career.model.js";
 import { UserModel } from "../../model/user.model.js";
 
 export const ProfileDetailSchemaValidation = z.object({
@@ -48,7 +47,7 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "presentaddressmodels",
-          localField: "_id",
+          localField: "PresentAddress",
           foreignField: "profileid",
           as: "addressDetails",
           pipeline: [
@@ -476,9 +475,11 @@ const getProfileData = async (req, res) => {
     if (!profileDetails) {
       return res.status(400).json({ message: "User do not exist" });
     }
+    console.log(req.user);
+
     return res
       .status(200)
-      .json({ message: "User Profile Data", profileDetails });
+      .json({ message: "User Profile Data", profileDetails, user: req.user });
   } catch (error) {
     return res.status(500).json({ message: "Failed to get UserData" });
   }

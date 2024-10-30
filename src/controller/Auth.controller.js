@@ -288,37 +288,31 @@ const VerifyCode = async (req, res) => {
 };
 
 const newPassword = async (req, res) => {
+  const data = emailSchema.safeParse(req.body.email);
+  const email = data.data;
+  if (!data.success) return res.status(400).json({ message: "Invaild Email" });
+
+  const newPassword = req.body.newPassword;
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({
+      message:
+        "Your password must be at least 6 characters long and include a mix of uppercase letters, lowercase letters, numbers, and special characters. Please try again.",
+    });
+  }
   try {
-    const data = emailSchema.safeParse(req.body.email);
-    const email = data.data;
-    if (!data.success)
-      return res.status(400).json({ message: "Invaild Email" });
+    const user = await UserModel.findOne({ email });
 
-    const newPassword = req.body.newPassword;
+    if (!user) return res.status(400).json({ message: "Invalid User" });
 
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        message:
-          "Your password must be at least 6 characters long and include a mix of uppercase letters, lowercase letters, numbers, and special characters. Please try again.",
-      });
-    }
-    try {
-      const user = await UserModel.findOne({ email });
+    user.password = newPassword;
+    await user.save();
 
-      if (!user) return res.status(400).json({ message: "Invalid User" });
-
-      user.password = newPassword;
-      await user.save();
-
-      delete EmailToOTP[email];
-      return res.status(200).json({ message: "Password Reset Successfully" });
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Failed to reset password" });
-    }
+    delete EmailToOTP[email];
+    return res.status(200).json({ message: "Password Reset Successfully" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Something went wrong" });
+    return res.status(400).json({ message: "Failed to reset password" });
   }
 };
 
