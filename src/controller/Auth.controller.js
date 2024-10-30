@@ -13,6 +13,8 @@ const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
 
+const emailSchema = z.string().email("Invalid email");
+
 const UserSchemaValidation = z.object({
   email: z.string().email(),
   firstName: z.string().min(2),
@@ -53,7 +55,23 @@ const registeredUser = async (req, res) => {
 
     const token = GenerateToken(data._id, data.email);
 
-    // await SendMailTemplate()
+    const { OTP, min, expire } = generateOTP();
+    EmailToOTP[validateData.data.email] = { OTP, expire };
+
+    const item = {
+      email: validateData.data.email,
+      Sub: "Verify Account",
+      text: OTP,
+    };
+    const template = {
+      url: "SendEmailOTP.ejs",
+      title: `Verify Your Account`,
+      userName: `${user.firstName} ${user.lastName}`,
+      OTP,
+      min,
+    };
+
+    await SendMailTemplate(item, template);
 
     res
       .cookie("token", token, {
@@ -98,6 +116,12 @@ const loginUser = async (req, res) => {
     return res.status(400).json({ message: "Password does not match" });
   }
 
+  if (!existUser.active) {
+    return res
+      .status(400)
+      .json({ message: "Please verify your account first" });
+  }
+
   const token = GenerateToken(existUser._id, email);
   const user = existUser.toObject();
   delete user.password;
@@ -119,24 +143,6 @@ const loginUser = async (req, res) => {
     ...user,
     token,
   });
-};
-
-const VerifyCode = async (req, res) => {
-  const { code } = req.params;
-  const { email } = req.body;
-  if (
-    EmailToOTP[email] ||
-    EmailToOTP.email.OTP != code ||
-    EmailToOTP.email.expire < Date.now()
-  ) {
-    return res
-      .status(400)
-      .json({ message: "Incorrect Verification code or code is expire" });
-  }
-  const user = await UserModel.findOne({ email });
-  user.active = true;
-  await user.save();
-  return res.status(200).json({ message: "User verified successfully" });
 };
 
 const GoogleLogin = async (req, res) => {
@@ -193,13 +199,32 @@ const GoogleLogin = async (req, res) => {
 };
 
 const ChangePassword = async (req, res) => {
-  const { password } = req.body;
+  const { oldPassword, password } = req.body;
+
+  if (oldPassword.trim() === password.trim()) {
+    return res.status(400).json({
+      message:
+        "The new password cannot be the same as the old password. Please choose a different one.",
+    });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({
+      message:
+        "Your password must be at least 6 characters long and include a mix of uppercase letters, lowercase letters, numbers, and special characters. Please try again.",
+    });
+  }
   try {
-    await UserModel.findByIdAndUpdate(
-      req.user._id,
-      { password },
-      { new: true }
-    );
+    const user = await UserModel.findById(req.user._id);
+    const result = await user.comparePassword(oldPassword);
+
+    if (!result) {
+      return res.status(400).json({
+        messages: "Old Password is Wrong",
+      });
+    }
+    user.password = password;
+    await user.save();
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
@@ -212,39 +237,89 @@ let EmailToOTP = {};
 
 const generateOTP = () => {
   const OTP = Math.floor(1000 + Math.random() * 9000);
-  const minute = 5;
-  const expire = Date.now() + 1000 * 60 * minute;
-  return { OTP, minute, expire };
+  const min = 5;
+  const expire = Date.now() + 1000 * 60 * min;
+  return { OTP, min, expire };
 };
 
 const SendOTP = async (req, res) => {
-  const { email } = req.body;
-  const user = await UserModel.findOne({ email });
+  const data = emailSchema.safeParse(req.body.email);
+  const email = data.data;
+  if (!data.success) return res.status(400).json({ message: "Invaild Email" });
+
+  const user = await UserModel.findOne({ email: data.data });
+
   if (!user) return res.status(400).json({ message: "User do not exist" });
 
-  const { OTP, minute, expire } = generateOTP();
+  const { OTP, min, expire } = generateOTP();
   EmailToOTP[email] = { OTP, expire };
 
   const item = { email, Sub: "Reset password", text: OTP };
   const template = {
     url: "SendEmailOTP.ejs",
+    title: `Password Reset Request`,
     userName: `${user.firstName} ${user.lastName}`,
     OTP,
-    minute,
+    min,
   };
-  console.log("OTP", OTP);
-  console.log("minute", minute);
-  console.log("expire", expire);
-  console.log("item", item);
-  console.log("temp", template);
 
-  const abc = await SendMailTemplate(item, template);
-
-  console.log("abc", abc);
+  await SendMailTemplate(item, template);
 
   return res.status(200).json({
     message: "OTP Sent",
   });
+};
+
+const VerifyCode = async (req, res) => {
+  const { code } = req.params;
+  const data = emailSchema.safeParse(req.body.email);
+  const email = data.data;
+  if (!data.success) return res.status(400).json({ message: "Invaild Email" });
+
+  if (EmailToOTP[email].OTP != code || EmailToOTP[email].expire < Date.now()) {
+    return res
+      .status(400)
+      .json({ message: "Incorrect Verification code or code is expire" });
+  }
+  const user = await UserModel.findOne({ email });
+  user.active = true;
+  await user.save();
+  return res.status(200).json({ message: "User verified successfully" });
+};
+
+const newPassword = async (req, res) => {
+  try {
+    const data = emailSchema.safeParse(req.body.email);
+    const email = data.data;
+    if (!data.success)
+      return res.status(400).json({ message: "Invaild Email" });
+
+    const newPassword = req.body.newPassword;
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        message:
+          "Your password must be at least 6 characters long and include a mix of uppercase letters, lowercase letters, numbers, and special characters. Please try again.",
+      });
+    }
+    try {
+      const user = await UserModel.findOne({ email });
+
+      if (!user) return res.status(400).json({ message: "Invalid User" });
+
+      user.password = newPassword;
+      await user.save();
+
+      delete EmailToOTP[email];
+      return res.status(200).json({ message: "Password Reset Successfully" });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: "Failed to reset password" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
 };
 
 export {
@@ -254,4 +329,5 @@ export {
   SendOTP,
   ChangePassword,
   VerifyCode,
+  newPassword,
 };

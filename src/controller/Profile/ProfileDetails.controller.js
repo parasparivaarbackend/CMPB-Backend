@@ -14,7 +14,7 @@ export const ProfileDetailSchemaValidation = z.object({
 const UpdateProfileDetails = async (req, res) => {
   const data = req.body;
   const validateData = ProfileDetailSchemaValidation.safeParse(data);
-  console.log(validateData);
+
   if (validateData.success === false) {
     return res.status(400).json({ ...validateData.error.issues });
   }
@@ -44,22 +44,11 @@ const getProfileData = async (req, res) => {
           _id: req.user.ProfileID,
         },
       },
-      {
-        $project: {
-          basicDetails: {
-            _id: "$_id",
-            firstName: "$firstName",
-            lastName: "$lastName",
-            gender: "$gender",
-            DOB: "$DOB",
-            profileImage: "$profileImage",
-          },
-        },
-      },
+
       {
         $lookup: {
           from: "presentaddressmodels",
-          localField: "PresentAddress",
+          localField: "_id",
           foreignField: "profileid",
           as: "addressDetails",
           pipeline: [
