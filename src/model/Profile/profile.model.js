@@ -5,102 +5,63 @@ const ProfileSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: "user",
   },
-  firstName: {
-    type: String,
-    required: [true, "First name is required."],
-    trim: true,
-  },
-  lastName: {
-    type: String,
-    required: [true, "Last name is required."],
-    trim: true,
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ["male", "female"],
-      message: "Gender must be either male or female.",
-    },
-  },
-  DOB: {
-    type: String,
-    trim: true,
-  },
-  profileImage: {
-    type: String,
-    trim: true,
-  },
   PresentAddress: {
     type: Schema.Types.ObjectId,
     ref: "presentaddressmodels",
   },
-  education:
-  {
+  education: {
     type: Schema.Types.ObjectId,
     ref: "educations",
   },
-  careers:
-  {
+  careers: {
     type: Schema.Types.ObjectId,
     ref: "careers",
   },
-  physicalattributes:
-  {
+  physicalattributes: {
     type: Schema.Types.ObjectId,
     ref: "physicalattributes",
   },
-  languages:
-  {
+  languages: {
     type: Schema.Types.ObjectId,
     ref: "languages",
   },
-  hoobiesandintrests:
-  {
+  hoobiesandintrests: {
     type: Schema.Types.ObjectId,
     ref: "hoobiesandintrests",
   },
-  personalattitudes:
-  {
+  personalattitudes: {
     type: Schema.Types.ObjectId,
     ref: "personalattitudes",
   },
-  residencyinfos:
-  {
+  residencyinfos: {
     type: Schema.Types.ObjectId,
     ref: "residencyinfos",
   },
-  backgrounds:
-  {
+  backgrounds: {
     type: Schema.Types.ObjectId,
     ref: "backgrounds",
   },
-  lifestyles:
-  {
+  lifestyles: {
     type: Schema.Types.ObjectId,
     ref: "lifestyles",
   },
-  astronomics:
-  {
+  astronomics: {
     type: Schema.Types.ObjectId,
     ref: "astronomics",
   },
-  permanentaddress:
-  {
+  permanentaddress: {
     type: Schema.Types.ObjectId,
     ref: "permanentaddress",
   },
-  familyinfos:
-  {
+  familyinfos: {
     type: Schema.Types.ObjectId,
     ref: "familyinfos",
   },
-  partnerexpectations:
-  {
+  partnerexpectations: {
     type: Schema.Types.ObjectId,
     ref: "partnerexpectations",
   },
-  showintrestins:
-  {
+  showintrestins: {
     type: Schema.Types.ObjectId,
     ref: "showintrestins",
   },

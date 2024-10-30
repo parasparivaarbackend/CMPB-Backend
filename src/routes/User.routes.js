@@ -1,8 +1,16 @@
 import { Router } from "express";
 import ProfileRouter from "./Profile/Profile.routes.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import { getAllUserByAdmin, getUserById } from "../controller/user.controller.js";
-import { AdminAuthMiddleware } from "../middleware/Auth.middleware.js";
+import {
+  getActiveUser,
+  getAllUserByAdmin,
+  getUserById,
+} from "../controller/user.controller.js";
+import {
+  AdminAuthMiddleware,
+  Auth,
+  UserAuthMiddleware,
+} from "../middleware/Auth.middleware.js";
 
 const UserRouter = Router();
 
@@ -13,9 +21,10 @@ UserRouter.route("/getAllUserAdmin?").get(
   asyncHandler(getAllUserByAdmin)
 );
 
-UserRouter.route("/getUser/:id").get(
-  AdminAuthMiddleware,
-  asyncHandler(getUserById)
+UserRouter.route("/getActiveUser").get(
+  UserAuthMiddleware,
+  asyncHandler(getActiveUser)
 );
+UserRouter.route("/check").get(Auth.UserAuth, asyncHandler(getUserById));
 
 export default UserRouter;

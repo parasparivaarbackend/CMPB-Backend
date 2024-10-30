@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ProfileModel } from "../../model/Profile/profile.model.js";
 import { careermodel } from "../../model/Profile/Career.model.js";
+import { UserModel } from "../../model/user.model.js";
 
 export const ProfileDetailSchemaValidation = z.object({
   firstName: z.string().min(3).max(50),
@@ -18,16 +19,20 @@ const UpdateProfileDetails = async (req, res) => {
     return res.status(400).json({ ...validateData.error.issues });
   }
   try {
-    const updatedProfile = await ProfileModel.findByIdAndUpdate(
-      { _id: req.user.ProfileID.toString() },
-      { ...data }
+    const updatedProfile = await UserModel.findByIdAndUpdate(
+      req.user._id,
+      {
+        ...validateData.data,
+      },
+      { new: true }
     );
+
     if (!updatedProfile) {
       return res.status(500).json({ message: "Failed to update Profile Data" });
     }
     return res.status(200).json({ message: "Data updated Successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("error is ", error);
   }
 };
 
@@ -39,22 +44,11 @@ const getProfileData = async (req, res) => {
           _id: req.user.ProfileID,
         },
       },
-      {
-        $project: {
-          basicDetails: {
-            _id: "$_id",
-            firstName: "$firstName",
-            lastName: "$lastName",
-            gender: "$gender",
-            DOB: "$DOB",
-            profileImage: "$profileImage",
-          },
-        },
-      },
+
       {
         $lookup: {
           from: "presentaddressmodels",
-          localField: "PresentAddress",
+          localField: "_id",
           foreignField: "profileid",
           as: "addressDetails",
           pipeline: [
