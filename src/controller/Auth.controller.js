@@ -54,6 +54,23 @@ const registeredUser = async (req, res) => {
     const token = GenerateToken(data._id, data.email);
 
     // await SendMailTemplate()
+    const { OTP, min, expire } = generateOTP();
+    EmailToOTP[validateData.data.email] = { OTP, expire };
+
+    const item = {
+      email: validateData.data.email,
+      Sub: "Verify Account",
+      text: OTP,
+    };
+    const template = {
+      url: "SendEmailOTP.ejs",
+      title: `Verify Your Account`,
+      userName: `${user.firstName} ${user.lastName}`,
+      OTP,
+      min,
+    };
+
+    // await SendMailTemplate(item, template);
 
     res
       .cookie("token", token, {
@@ -196,41 +213,55 @@ const ChangePassword = async (req, res) => {
   }
 };
 
+const forgetPassword = async (req, res) => {
+  const emailSchema = z.object({
+    email: z.string().email("Invalid email format"),
+  });
+
+  const { email } = emailSchema.parse(req.body);
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid User" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 let EmailToOTP = {};
 
 const generateOTP = () => {
   const OTP = Math.floor(1000 + Math.random() * 9000);
-  const minute = 5;
-  const expire = Date.now() + 1000 * 60 * minute;
-  return { OTP, minute, expire };
+  const min = 5;
+  const expire = Date.now() + 1000 * 60 * min;
+  return { OTP, min, expire };
 };
 
 const SendOTP = async (req, res) => {
-  const { email } = req.body;
-  const user = await UserModel.findOne({ email });
-  if (!user) return res.status(400).json({ message: "User do not exist" });
-  console.log("user", user);
+  const emailSchema = z.string().email("Invalid email");
 
-  const { OTP, minute, expire } = generateOTP();
+  const data = emailSchema.safeParse(req.body.email);
+
+  if (!data.success) return res.status(400).json({ message: "Invaild Email" });
+
+  const user = await UserModel.findOne({ email });
+
+  if (!user) return res.status(400).json({ message: "User do not exist" });
+
+  const { OTP, min, expire } = generateOTP();
   EmailToOTP[email] = { OTP, expire };
 
   const item = { email, Sub: "Reset password", text: OTP };
   const template = {
     url: "SendEmailOTP.ejs",
+    title: `Password Reset Request`,
     userName: `${user.firstName} ${user.lastName}`,
     OTP,
-    minute,
+    min,
   };
-  console.log("OTP", OTP);
-  console.log("minute", minute);
-  console.log("expire", expire);
-  console.log("item", item);
-  console.log("temp", template);
 
-  const abc = await SendMailTemplate(item, template);
-  console.log(abc);
-
-  console.log("abc", abc);
+  await SendMailTemplate(item, template);
 
   return res.status(200).json({
     message: "OTP Sent",

@@ -9,12 +9,10 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
   if (!token) return res.status(400).json({ message: "Unauthenticated" });
 
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  console.log("decodedToken", decodedToken);
 
   const user = await UserModel.findById(decodedToken._id).select(
     "-password -updatedAt -__v"
   );
-  console.log(user);
 
   if (!user) return res.status(400).json({ message: "Invalid User" });
 
