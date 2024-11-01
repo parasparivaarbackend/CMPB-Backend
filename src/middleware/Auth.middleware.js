@@ -42,7 +42,7 @@ const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
 
   if (!admin) return res.status(400).json({ message: "Invalid admin" });
 
-  if (admin.role !== "admin" && admin.role !== "user")
+  if (admin.role !== "admin")
     return res.status(400).json({ message: "Unauthorize user" });
 
   if (admin && !admin.active) {
@@ -51,7 +51,7 @@ const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
       .json({ message: "Please verify your account first" });
   }
 
-  req.admin = admin;
+  req.user = admin;
   next();
 });
 export { UserAuthMiddleware, AdminAuthMiddleware };
