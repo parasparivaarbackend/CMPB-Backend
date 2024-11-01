@@ -4,6 +4,7 @@ import ProfileRouter from "./Profile/Profile.routes.js";
 import { ContactUsRouter } from "./Contact/ContactUs.routes.js";
 import UserRouter from "./User.routes.js";
 import { EventRouter } from "./EventDetails/EventDetails.routes.js";
+import { HappyStoriesRouter } from "./HappyStories/HappyStories.routes.js";
 
 const IndexRoute = Router();
 
@@ -15,5 +16,6 @@ IndexRoute.use("/user", UserRouter);
 IndexRoute.use("/profile", ProfileRouter);
 IndexRoute.use("/contact", ContactUsRouter);
 IndexRoute.use("/events", EventRouter);
+IndexRoute.use("/happystories", HappyStoriesRouter);
 
 export default IndexRoute;

@@ -19,6 +19,7 @@ import { PermanentAddressRouter } from "./PermanentAddress.routes.js";
 import { FamilyInfoRouter } from "./FamilyInfo.routes.js";
 import { PartnerExpectationRouter } from "./PartnerExpectation.routes.js";
 import { ShowIntrestInRouter } from "./ShowIntrestIn.routes.js";
+import { LifeStyleRouter } from "./LifeStyle.routes.js";
 
 const ProfileRouter = Router();
 
@@ -45,6 +46,8 @@ ProfileRouter.use("/education", educationRouter);
 ProfileRouter.use("/physicalattribute", PhysicalAttributerouter);
 
 ProfileRouter.use("/languages", Languagerouter);
+
+ProfileRouter.use("/lifestyle", LifeStyleRouter);
 
 ProfileRouter.use("/hoobiesandintrest", HoobiesAndIntrestrouter);
 
