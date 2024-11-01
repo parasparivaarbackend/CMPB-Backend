@@ -12,6 +12,19 @@ import mongoose from "mongoose";
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
+function generateMemberID() {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  let randomID = "#";
+
+  for (let i = 0; i < 3; i++) {
+    const randomCharIndex = Math.floor(Math.random() * characters.length);
+    const randomNumIndex = Math.floor(Math.random() * numbers.length);
+    randomID += characters[randomCharIndex] + numbers[randomNumIndex];
+  }
+
+  return randomID;
+}
 
 const emailSchema = z.string().email("Invalid email");
 
@@ -31,23 +44,34 @@ const registeredUser = async (req, res) => {
   if (validateData.success === false) {
     return res.status(400).json({ ...validateData.error.issues });
   }
+  let MemberID = generateMemberID();
   const existUser = await UserModel.findOne({
     $or: [
+      { MemberID: "#Q8I7W0" },
       { email: validateData.data.email },
       { phone: validateData.data.phone },
     ],
   });
+  if (existUser.MemberID == MemberID) {
+    MemberID = generateMemberID();
+    if (existUser.MemberID == MemberID) {
+      MemberID = generateMemberID();
+    }
+  }
   if (existUser) {
     return res.status(400).json({
       message: "User already Exist",
+      existUser,
     });
   }
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     const user = new UserModel(validateData.data);
     const profileData = new ProfileModel({ UserID: user._id });
     user.ProfileID = profileData._id;
+    user.MemberID = "#Q8I7W0";
     await profileData.save();
     const savedUser = await user.save();
     const data = savedUser.toObject();
@@ -71,24 +95,11 @@ const registeredUser = async (req, res) => {
       min,
     };
 
-    await SendMailTemplate(item, template);
-
-    res
-      .cookie("token", token, {
-        httpOnly: false,
-        secure: false,
-        path: "/",
-      })
-      .cookie("role", data.role, {
-        httpOnly: false,
-        secure: false,
-        path: "/",
-      });
+    // await SendMailTemplate(item, template);
 
     return res.status(200).json({
       message: "User registered successfull",
       ...data,
-      token,
     });
   } catch (error) {
     await session.abortTransaction();

@@ -39,8 +39,25 @@ export async function DeleteBucketFile(id) {
     await file.delete();
     return `Deleted Successfully`;
   } catch (error) {
-    console.log("Failed to Delete from Bucket");
     console.log("Failed to Delete File from Bucket ", error);
     throw new Error(`Failed to Delete File from Bucket `);
+  }
+}
+
+export async function ListFilesHandler() {
+  try {
+    const bucket = storage.bucket(process.env.BUCKET_NAME);
+    const [files] = await bucket.getFiles({
+      prefix: `CMPB/`,
+    });
+
+    const fileList = files.map((file) => ({
+      name: file.name,
+      url: `https://storage.googleapis.com/${file.bucket.name}/${file.name}`,
+    }));
+
+    return fileList;
+  } catch (error) {
+    console.log(error);
   }
 }
