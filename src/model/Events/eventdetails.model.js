@@ -21,6 +21,10 @@ const eventDetailsSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    description: {
+        type: String,
+        trim: true
+    },
     clientID: [{
         type: Schema.Types.ObjectId,
         ref:"user"
