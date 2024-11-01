@@ -75,12 +75,17 @@ const UpdateHappyStories = async (req, res) => {
 const DeleteHappyStories = async(req, res)=>{
     const {id} = req.params;
  
-    const data = await happystoriesmodel.findByIdAndDelete(id)
-    if (!data) {
-        return res.status(400).json({message:"Happy Story Not deleted try again"})
-    }
-
-    return res.status(200).json({ message: "Happy Story deleted Succesfull" })
+   try {
+     const data = await happystoriesmodel.findByIdAndDelete(id)
+     if (!data) {
+         return res.status(400).json({message:"Happy Story Not Found"})
+     }
+ 
+     return res.status(200).json({ message: "Happy Story deleted Succesfull" })
+   } catch (error) {
+    console.log(error);
+    
+   }
 
 }
 
