@@ -39,7 +39,7 @@ export async function DeleteBucketFile(id) {
     await file.delete();
     return `Deleted Successfully`;
   } catch (error) {
-    console.log("Failed to Delete from Bucket");
+    
     console.log("Failed to Delete File from Bucket ", error);
     throw new Error(`Failed to Delete File from Bucket `);
   }
