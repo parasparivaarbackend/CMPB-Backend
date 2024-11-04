@@ -51,6 +51,9 @@ UserRouter.route("/member/?").get(
   UserAuthMiddleware,
   asyncHandler(getMemberByID)
 );
-UserRouter.route("/check").get(Auth.UserAuth, asyncHandler(getUserById));
+UserRouter.route("/getUser/:id").get(
+  UserAuthMiddleware,
+  asyncHandler(getUserById)
+);
 
 export default UserRouter;
