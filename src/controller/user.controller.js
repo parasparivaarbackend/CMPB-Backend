@@ -6,6 +6,7 @@ import {
   ListFilesHandler,
   UploadBucketHandler,
 } from "../utils/CloudBucketHandler.js";
+import { ProfileModel } from "../model/Profile/profile.model.js";
 
 export const UserProfileSchemaValidation = z.object({
   firstName: z.string().min(3).max(50),
@@ -119,23 +120,43 @@ const getAllUserByAdmin = async (req, res) => {
 const getUserById = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await UserModel.findById(id).select("-password -__v");
+    const user = await UserModel.findById(id).select("-password -__v");
+    if (!user) return res.status(400).json({ message: "User not found" });
+
     const profileDetails = await ProfileModel.aggregate([
       {
         $match: {
-          _id: req.user.ProfileID,
+          _id: user.ProfileID,
         },
       },
       {
-        $project: {
-          basicDetails: {
-            _id: "$_id",
-            firstName: "$firstName",
-            lastName: "$lastName",
-            gender: "$gender",
-            DOB: "$DOB",
-            profileImage: "$profileImage",
-          },
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "ProfileID",
+          as: "User",
+          pipeline: [
+            {
+              $project: {
+                MemberID: 1,
+                firstName: 1,
+                lastName: 1,
+                gender: 1,
+                DOB: 1,
+                profileImage: 1,
+                email: 1,
+                phone: 1,
+                active: 1,
+                RegisterPackage: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$User",
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
@@ -145,11 +166,6 @@ const getUserById = async (req, res) => {
           foreignField: "profileid",
           as: "addressDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 Country: 1,
@@ -175,11 +191,6 @@ const getUserById = async (req, res) => {
           as: "educationDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Degree: 1,
                 insitution: 1,
@@ -204,11 +215,6 @@ const getUserById = async (req, res) => {
           as: "careerDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 designation: 1,
                 company: 1,
@@ -232,11 +238,6 @@ const getUserById = async (req, res) => {
           foreignField: "profileid",
           as: "physicalattributeDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 Height: 1,
@@ -263,11 +264,6 @@ const getUserById = async (req, res) => {
           as: "languageDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 motherTounge: 1,
                 knownLanguage: 1,
@@ -289,11 +285,6 @@ const getUserById = async (req, res) => {
           foreignField: "profileid",
           as: "hoobiesandintrestDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 Hobbies: 1,
@@ -325,11 +316,6 @@ const getUserById = async (req, res) => {
           as: "personalattitudeDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Affection: 1,
                 religionService: 1,
@@ -351,11 +337,6 @@ const getUserById = async (req, res) => {
           foreignField: "profileid",
           as: "residencyinfoDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 birthCounty: 1,
@@ -380,11 +361,6 @@ const getUserById = async (req, res) => {
           foreignField: "profileid",
           as: "backgroundDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 Religion: 1,
@@ -411,11 +387,6 @@ const getUserById = async (req, res) => {
           as: "lifestyleDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Diet: 1,
                 Drink: 1,
@@ -439,11 +410,6 @@ const getUserById = async (req, res) => {
           foreignField: "profileid",
           as: "astronomicDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 SunSign: 1,
@@ -469,11 +435,6 @@ const getUserById = async (req, res) => {
           as: "permanentaddressDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Country: 1,
                 State: 1,
@@ -498,11 +459,6 @@ const getUserById = async (req, res) => {
           as: "familyinfoDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Father: 1,
                 Mother: 1,
@@ -525,11 +481,6 @@ const getUserById = async (req, res) => {
           foreignField: "profileid",
           as: "partnerexpectationDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 GernalRequirement: 1,
@@ -566,7 +517,15 @@ const getUserById = async (req, res) => {
       },
     ]);
 
-    console.log(data);
+    if (!profileDetails) {
+      return res.status(400).json({ message: "User do not exist" });
+    }
+
+    console.log(profileDetails);
+    return res.status(200).json({
+      message: "User Profile Data",
+      profileDetails: { ...profileDetails[0] },
+    });
   } catch (error) {
     console.log(error);
   }

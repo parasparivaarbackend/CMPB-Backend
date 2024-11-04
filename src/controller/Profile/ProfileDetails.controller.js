@@ -18,7 +18,6 @@ const getProfileData = async (req, res) => {
           _id: req.user.ProfileID,
         },
       },
-
       {
         $lookup: {
           from: "presentaddressmodels",
@@ -26,11 +25,6 @@ const getProfileData = async (req, res) => {
           foreignField: "profileid",
           as: "addressDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 Country: 1,
@@ -56,11 +50,6 @@ const getProfileData = async (req, res) => {
           as: "educationDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Degree: 1,
                 insitution: 1,
@@ -85,11 +74,6 @@ const getProfileData = async (req, res) => {
           as: "careerDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 designation: 1,
                 company: 1,
@@ -113,11 +97,6 @@ const getProfileData = async (req, res) => {
           foreignField: "profileid",
           as: "physicalattributeDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 Height: 1,
@@ -144,11 +123,6 @@ const getProfileData = async (req, res) => {
           as: "languageDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 motherTounge: 1,
                 knownLanguage: 1,
@@ -170,11 +144,6 @@ const getProfileData = async (req, res) => {
           foreignField: "profileid",
           as: "hoobiesandintrestDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 Hobbies: 1,
@@ -206,11 +175,6 @@ const getProfileData = async (req, res) => {
           as: "personalattitudeDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Affection: 1,
                 religionService: 1,
@@ -232,11 +196,6 @@ const getProfileData = async (req, res) => {
           foreignField: "profileid",
           as: "residencyinfoDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 birthCounty: 1,
@@ -261,11 +220,6 @@ const getProfileData = async (req, res) => {
           foreignField: "profileid",
           as: "backgroundDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 Religion: 1,
@@ -292,11 +246,6 @@ const getProfileData = async (req, res) => {
           as: "lifestyleDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Diet: 1,
                 Drink: 1,
@@ -320,11 +269,6 @@ const getProfileData = async (req, res) => {
           foreignField: "profileid",
           as: "astronomicDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 SunSign: 1,
@@ -350,11 +294,6 @@ const getProfileData = async (req, res) => {
           as: "permanentaddressDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Country: 1,
                 State: 1,
@@ -379,11 +318,6 @@ const getProfileData = async (req, res) => {
           as: "familyinfoDetails",
           pipeline: [
             {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
-            {
               $project: {
                 Father: 1,
                 Mother: 1,
@@ -406,11 +340,6 @@ const getProfileData = async (req, res) => {
           foreignField: "profileid",
           as: "partnerexpectationDetails",
           pipeline: [
-            {
-              $match: {
-                ProfileID: req.user.ProfileID,
-              },
-            },
             {
               $project: {
                 GernalRequirement: 1,
