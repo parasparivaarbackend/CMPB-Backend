@@ -11,6 +11,11 @@ const eventDetailsSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    state: {
+        type: String,
+        required: true,
+        trim: true
+    },
     amount: {
         type: Number,
         required: true,
@@ -19,6 +24,10 @@ const eventDetailsSchema = new mongoose.Schema({
     eventName: {
         type: String,
         required: true,
+        trim: true
+    },
+    description: {
+        type: String,
         trim: true
     },
     clientID: [{
