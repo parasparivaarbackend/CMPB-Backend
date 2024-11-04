@@ -9,6 +9,15 @@ const HappyStoriesSchema = z.object({
     Content: z.string().min(2)
 })
 
+const GetHappyStories = async(req, res)=>{
+
+    const data = await happystoriesmodel.find();
+    if (!data) {
+        return res.status(400).json({message:"Empty"})
+    }
+    return res.status(200).json({message:"Happy Stories get Succesfull", data})
+}
+
 
 const CreateHappyStories = async (req, res) => {
     const createData = req.body;
@@ -89,4 +98,4 @@ const DeleteHappyStories = async(req, res)=>{
 
 }
 
-export { CreateHappyStories, UpdateHappyStories, DeleteHappyStories}
+export { CreateHappyStories, UpdateHappyStories, DeleteHappyStories, GetHappyStories }
