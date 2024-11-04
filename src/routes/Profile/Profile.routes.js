@@ -1,8 +1,5 @@
 import { Router } from "express";
-import {
-  getProfileData,
-  UpdateProfileDetails,
-} from "../../controller/Profile/ProfileDetails.controller.js";
+import { getProfileData } from "../../controller/Profile/ProfileDetails.controller.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import { UserAuthMiddleware } from "../../middleware/Auth.middleware.js";
 import presentaddressRouter from "./PresentAddress.routes.js";
@@ -21,6 +18,7 @@ import { PartnerExpectationRouter } from "./PartnerExpectation.routes.js";
 import { ShowIntrestInRouter } from "./ShowIntrestIn.routes.js";
 import { LifeStyleRouter } from "./LifeStyle.routes.js";
 
+
 const ProfileRouter = Router();
 
 //create register krte waqt kr rha h sirf update krega
@@ -28,10 +26,7 @@ const ProfileRouter = Router();
 //   AuthMiddleware,
 //   asyncHandler(CreateProfileDetails)
 // );
-ProfileRouter.route("/update").put(
-  [UserAuthMiddleware],
-  asyncHandler(UpdateProfileDetails)
-);
+
 ProfileRouter.route("/get").get(
   [UserAuthMiddleware],
   asyncHandler(getProfileData)

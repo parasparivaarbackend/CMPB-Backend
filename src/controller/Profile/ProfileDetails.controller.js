@@ -10,31 +10,6 @@ export const ProfileDetailSchemaValidation = z.object({
   profileImage: z.string().url().optional(),
 });
 
-const UpdateProfileDetails = async (req, res) => {
-  const data = req.body;
-  const validateData = ProfileDetailSchemaValidation.safeParse(data);
-
-  if (validateData.success === false) {
-    return res.status(400).json({ ...validateData.error.issues });
-  }
-  try {
-    const updatedProfile = await UserModel.findByIdAndUpdate(
-      req.user._id,
-      {
-        ...validateData.data,
-      },
-      { new: true }
-    );
-
-    if (!updatedProfile) {
-      return res.status(500).json({ message: "Failed to update Profile Data" });
-    }
-    return res.status(200).json({ message: "Data updated Successfully" });
-  } catch (error) {
-    console.error("error is ", error);
-  }
-};
-
 const getProfileData = async (req, res) => {
   try {
     const profileDetails = await ProfileModel.aggregate([
@@ -485,4 +460,4 @@ const getProfileData = async (req, res) => {
   }
 };
 
-export { UpdateProfileDetails, getProfileData };
+export { getProfileData };
