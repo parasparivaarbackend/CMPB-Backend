@@ -429,7 +429,7 @@ const getUserById = async (req, res) => {
       },
       {
         $lookup: {
-          from: "permanentaddress",
+          from: "permanentaddresses",
           localField: "permanentaddress",
           foreignField: "profileid",
           as: "permanentaddressDetails",

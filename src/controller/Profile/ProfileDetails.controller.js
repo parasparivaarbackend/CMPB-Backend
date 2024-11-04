@@ -288,7 +288,7 @@ const getProfileData = async (req, res) => {
       },
       {
         $lookup: {
-          from: "permanentaddress",
+          from: "permanentaddresses",
           localField: "permanentaddress",
           foreignField: "profileid",
           as: "permanentaddressDetails",
@@ -702,7 +702,7 @@ const getAdminProfileData = async (req, res) => {
       },
       {
         $lookup: {
-          from: "permanentaddress",
+          from: "permanentaddresses",
           localField: "permanentaddress",
           foreignField: "profileid",
           as: "permanentaddressDetails",
