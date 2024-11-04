@@ -41,44 +41,47 @@ const UserSchemaValidation = z.object({
 const registeredUser = async (req, res) => {
   const userData = req.body;
   const validateData = UserSchemaValidation.safeParse(userData);
-  if (validateData.success === false) {
-    return res.status(400).json({ ...validateData.error.issues });
+
+  if (!validateData.success) {
+    return res.status(400).json({ errors: validateData.error.issues });
   }
-  let MemberID = generateMemberID();
-  const existUser = await UserModel.findOne({
-    $or: [
-      { MemberID: "#Q8I7W0" },
-      { email: validateData.data.email },
-      { phone: validateData.data.phone },
-    ],
-  });
-  if (existUser.MemberID == MemberID) {
-    MemberID = generateMemberID();
-    if (existUser.MemberID == MemberID) {
-      MemberID = generateMemberID();
-    }
-  }
-  if (existUser) {
-    return res.status(400).json({
-      message: "User already Exist",
-      existUser,
-    });
-  }
+
+  let MemberID;
+  const session = await mongoose.startSession();
+
   try {
-    const session = await mongoose.startSession();
     session.startTransaction();
+
+    // Loop to ensure unique MemberID
+    do {
+      MemberID = generateMemberID();
+      const existUser = await UserModel.findOne({
+        $or: [
+          { MemberID },
+          { email: validateData.data.email },
+          { phone: validateData.data.phone },
+        ],
+      }).session(session);
+
+      if (!existUser) break; // Break if no existing user is found
+    } while (existUser && existUser.MemberID === MemberID);
 
     const user = new UserModel(validateData.data);
     const profileData = new ProfileModel({ UserID: user._id });
+
+    // Set references and save profile and user
     user.ProfileID = profileData._id;
-    user.MemberID = "#Q8I7W0";
-    await profileData.save();
-    const savedUser = await user.save();
+    user.MemberID = MemberID;
+    await profileData.save({ session });
+    const savedUser = await user.save({ session });
+
+    // Prepare response data without password
     const data = savedUser.toObject();
     delete data.password;
 
     const token = GenerateToken(data._id, data.email);
 
+    // OTP generation and email setup
     const { OTP, min, expire } = generateOTP();
     EmailToOTP[validateData.data.email] = { OTP, expire };
 
@@ -95,15 +98,20 @@ const registeredUser = async (req, res) => {
       min,
     };
 
-    // await SendMailTemplate(item, template);
+    await SendMailTemplate(item, template);
+    await session.commitTransaction();
 
     return res.status(200).json({
-      message: "User registered successfull",
+      message: "User registered successfully",
       ...data,
     });
   } catch (error) {
     await session.abortTransaction();
     console.error("Transaction aborted due to an error:", error);
+    return res.status(500).json({
+      message: "User registration failed due to a server error.",
+      error: error.message,
+    });
   } finally {
     session.endSession();
   }
