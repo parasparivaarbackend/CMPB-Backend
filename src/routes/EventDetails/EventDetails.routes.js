@@ -1,17 +1,38 @@
 import { Router } from "express";
-import { CreateEventDetails, DeleteEventsDetails, GetEvents, UpdateEventDetails } from "../../controller/eventDetails/eventDetails.contoller.js";
-import { AdminAuthMiddleware } from "../../middleware/Auth.middleware.js"
+import {
+  CreateEventDetails,
+  DeleteEventsDetails,
+  GetEvents,
+  RegisterForEvent,
+  UpdateEventDetails,
+  verifyPayment,
+} from "../../controller/eventDetails/eventDetails.contoller.js";
+import {
+  AdminAuthMiddleware,
+  UserAuthMiddleware,
+} from "../../middleware/Auth.middleware.js";
 import asyncHandler from "../../utils/asyncHandler.js";
-
 
 const EventRouter = Router();
 
-EventRouter.route("/get").get( asyncHandler(GetEvents))
+EventRouter.route("/get").get(asyncHandler(GetEvents));
 
-EventRouter.route("/create").post(AdminAuthMiddleware, asyncHandler(CreateEventDetails))
+EventRouter.route("/create").post(
+  AdminAuthMiddleware,
+  asyncHandler(CreateEventDetails)
+);
 
-EventRouter.route("/update/:id").put(AdminAuthMiddleware, asyncHandler(UpdateEventDetails))
+EventRouter.route("/update/:id").put(
+  AdminAuthMiddleware,
+  asyncHandler(UpdateEventDetails)
+);
 
-EventRouter.route("/delete/:id").delete(AdminAuthMiddleware, asyncHandler(DeleteEventsDetails))
+EventRouter.route("/delete/:id").delete(
+  AdminAuthMiddleware,
+  asyncHandler(DeleteEventsDetails)
+);
 
-export { EventRouter }
+EventRouter.route("/pay/?").post(asyncHandler(RegisterForEvent));
+EventRouter.route("/payment/verify").post(asyncHandler(verifyPayment));
+
+export { EventRouter };
