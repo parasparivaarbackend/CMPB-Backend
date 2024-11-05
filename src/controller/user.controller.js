@@ -96,8 +96,6 @@ const ManualDeleteImage = async (req, res) => {
 
 const getAllUserByAdmin = async (req, res) => {
   const { query } = req;
-  console.log(query.registered);
-  console.log(typeof query.registered);
 
   if (
     typeof query.registered !== "string" &&
