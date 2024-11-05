@@ -95,23 +95,28 @@ const ManualDeleteImage = async (req, res) => {
 };
 
 const getAllUserByAdmin = async (req, res) => {
-  const {registered} = req.body;
-  if (typeof (registered) !== 'boolean') {
-    return res.status(400).json({message:"Enter Valid Value"})
-  }
   const { query } = req;
+  console.log(query.registered);
+  console.log(typeof query.registered);
+
+  if (
+    typeof query.registered !== "string" &&
+    (query.registered !== "false" || query.registered !== "true")
+  )
+    return res.status(400).json({ message: "Enter Valid Value" });
+
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 10;
   const newPage = limit * (page - 1);
   try {
-    const data = await UserModel.find({RegisterPackage:registered})
+    const data = await UserModel.find({ RegisterPackage: query.registered })
       .skip(newPage)
       .limit(limit)
       .select("-password");
 
     return res.status(200).json({
       message: "All user Data",
-      data
+      data,
     });
   } catch (error) {
     console.log(error);
