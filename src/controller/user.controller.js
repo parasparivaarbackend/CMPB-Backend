@@ -95,21 +95,23 @@ const ManualDeleteImage = async (req, res) => {
 };
 
 const getAllUserByAdmin = async (req, res) => {
+  const {registered} = req.body;
+  if (typeof (registered) !== 'boolean') {
+    return res.status(400).json({message:"Enter Valid Value"})
+  }
   const { query } = req;
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 10;
   const newPage = limit * (page - 1);
   try {
-    const data = await UserModel.find({})
+    const data = await UserModel.find({RegisterPackage:registered})
       .skip(newPage)
       .limit(limit)
       .select("-password");
-    const data2 = await UserModel.find({}).countDocuments();
 
     return res.status(200).json({
       message: "All user Data",
-      data,
-      totalUsers: data2,
+      data
     });
   } catch (error) {
     console.log(error);
