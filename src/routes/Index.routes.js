@@ -5,6 +5,8 @@ import { ContactUsRouter } from "./Contact/ContactUs.routes.js";
 import UserRouter from "./User.routes.js";
 import { EventRouter } from "./EventDetails/EventDetails.routes.js";
 import { HappyStoriesRouter } from "./HappyStories/HappyStories.routes.js";
+import { DeactivateRouter } from "./Deactivate/Deactivate.routes.js";
+import { ChurayeHuaPalRouter } from "./ChurayeHuaPal/ChurayeHuaPal.routes.js";
 
 const IndexRoute = Router();
 
@@ -17,5 +19,7 @@ IndexRoute.use("/profile", ProfileRouter);
 IndexRoute.use("/contact", ContactUsRouter);
 IndexRoute.use("/events", EventRouter);
 IndexRoute.use("/happystories", HappyStoriesRouter);
+IndexRoute.use("/deactivate-account", DeactivateRouter);
+IndexRoute.use("/churaye-hua-pal", ChurayeHuaPalRouter);
 
 export default IndexRoute;
