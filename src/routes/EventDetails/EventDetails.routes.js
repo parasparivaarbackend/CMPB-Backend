@@ -27,12 +27,15 @@ EventRouter.route("/update/:id").put(
   asyncHandler(UpdateEventDetails)
 );
 
-EventRouter.route("/delete/:id").delete(
-  AdminAuthMiddleware,
-  asyncHandler(DeleteEventsDetails)
-);
+// EventRouter.route("/delete/:id").delete(
+//   AdminAuthMiddleware,
+//   asyncHandler(DeleteEventsDetails)
+// );
 
-EventRouter.route("/pay/?").post(asyncHandler(RegisterForEvent));
-EventRouter.route("/payment/verify").post(asyncHandler(verifyPayment));
+EventRouter.route("/pay/?").post(
+  UserAuthMiddleware,
+  asyncHandler(RegisterForEvent)
+);
+// EventRouter.route("/payment/verify").post(asyncHandler(verifyPayment));
 
 export { EventRouter };

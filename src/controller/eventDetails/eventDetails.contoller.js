@@ -83,27 +83,33 @@ const razorpayInstance = new Razorpay({
 });
 
 const RegisterForEvent = async (req, res) => {
-  console.log(req.baseUrl);
+  const { eventid, memberid } = req.query;
 
-  //   return res.status(200).json({ data:[req] });
+  let receiptId;
+  if (req.baseUrl === "/api/v1/events" && eventid) {
+    receiptId = `event_${eventid}_${memberid}_${Date.now()}`;
+  } else {
+    receiptId = `Package_${memberid}_${Date.now()}`;
+  }
 
-  //   const { eventid } = req.query;
-  //   console.log(eventid);
+  try {
+    const options = {
+      amount: req.body.amount * 100,
+      currency: "INR",
+      receipt: receiptId,
+      payment_capture: 1,
+      notes:
+        eventid && req.baseUrl === "/api/v1/events"
+          ? ["payment for event"]
+          : ["payment for package"],
+    };
+    const order = await razorpayInstance.orders.create(options);
 
-  //   try {
-  //     const options = {
-  //       amount: req.body.amount * 100,
-  //       currency: "INR",
-  //       receipt: "order_rcptid_11",
-  //       payment_capture: 1,
-  //       notes: ["payment for event"],
-  //     };
-  //     const order = await razorpayInstance.orders.create(options);
-  //     console.log(order);
-  //     return res.status(200).json({ order });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
+    return res.status(200).json({ order });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Failed to make payment" });
+  }
 };
 
 const verifyPayment = async (req, res) => {
