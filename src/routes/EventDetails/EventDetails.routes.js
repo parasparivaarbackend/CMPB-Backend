@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   CreateEventDetails,
+  createEventPayment,
   DeleteEventsDetails,
   GetEvents,
   UpdateEventDetails,
@@ -18,6 +19,10 @@ EventRouter.route("/get").get(asyncHandler(GetEvents));
 EventRouter.route("/create").post(
   AdminAuthMiddleware,
   asyncHandler(CreateEventDetails)
+);
+EventRouter.route("/bookuser").post(
+  UserAuthMiddleware,
+  asyncHandler(createEventPayment)
 );
 
 EventRouter.route("/update/:id").put(

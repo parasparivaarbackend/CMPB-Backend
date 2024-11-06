@@ -104,4 +104,5 @@ export {
   UpdateEventDetails,
   DeleteEventsDetails,
   GetEvents,
+  createEventPayment,
 };
