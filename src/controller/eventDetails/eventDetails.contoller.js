@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { eventdetails } from "../../model/Events/eventdetails.model.js";
-import { eventPaymentModel } from "../../model/Events/eventPayment.model.js";
+
 import mongoose from "mongoose";
 
 //Mostly for Admin only get for All
