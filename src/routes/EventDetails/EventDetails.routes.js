@@ -5,6 +5,7 @@ import {
   DeleteEventsDetails,
   GetEvents,
   UpdateEventDetails,
+  UserWhoBookedEvent,
 } from "../../controller/eventDetails/eventDetails.contoller.js";
 import {
   AdminAuthMiddleware,
@@ -20,9 +21,12 @@ EventRouter.route("/create").post(
   AdminAuthMiddleware,
   asyncHandler(CreateEventDetails)
 );
-EventRouter.route("/bookuser").post(
+EventRouter.route("/bookuser/:id").post(
   UserAuthMiddleware,
   asyncHandler(createEventPayment)
+);
+EventRouter.route("/UserWhoBookedEvent/:id").get(
+  asyncHandler(UserWhoBookedEvent)
 );
 
 EventRouter.route("/update/:id").put(

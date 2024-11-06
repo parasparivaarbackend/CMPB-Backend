@@ -31,6 +31,20 @@ const eventDetailsSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    ClientDetails: [
+      {
+        UserID: {
+          type: Schema.Types.ObjectId,
+          ref: "user",
+        },
+        razorpayOrderID: {
+          type: String,
+        },
+        RazorPayPaymentId: {
+          type: String,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
