@@ -28,7 +28,7 @@ const CreateEventDetails = async (req, res) => {
     return res.status(400).json({ ...validationData.error.issues });
   }
 
-  const checkDate = await eventdetails.find();
+  const checkDate = await eventdetails.find({availableDates:validationData.data.availableDates || null});
 
   if (checkDate && checkDate?.length > 0) {
     return res.status(400).json({ message: "Date already exist" });
