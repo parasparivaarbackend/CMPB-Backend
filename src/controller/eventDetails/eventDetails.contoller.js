@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-
 import { eventdetails } from "../../model/Events/eventdetails.model.js";
 import { eventPaymentModel } from "../../model/Events/eventPayment.model.js";
-
 
 //Mostly for Admin only get for All
 const eventsSchema = z.object({
@@ -17,7 +15,7 @@ const eventsSchema = z.object({
 const eventPaymentSchema = z.object({
   eventID: z.string().min(2),
   razorpayOrderID: z.string().min(2),
-  RazorPayPaymentId: z.number().min(2),
+  RazorPayPaymentId: z.string().min(2),
 });
 
 const GetEvents = async (req, res) => {
