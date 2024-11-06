@@ -7,6 +7,7 @@ import { EventRouter } from "./EventDetails/EventDetails.routes.js";
 import { HappyStoriesRouter } from "./HappyStories/HappyStories.routes.js";
 import { DeactivateRouter } from "./Deactivate/Deactivate.routes.js";
 import { ChurayeHuaPalRouter } from "./ChurayeHuaPal/ChurayeHuaPal.routes.js";
+import PaymentRouter from "./payment.routes.js";
 
 const IndexRoute = Router();
 
@@ -21,5 +22,6 @@ IndexRoute.use("/events", EventRouter);
 IndexRoute.use("/happystories", HappyStoriesRouter);
 IndexRoute.use("/deactivate-account", DeactivateRouter);
 IndexRoute.use("/churaye-hua-pal", ChurayeHuaPalRouter);
+IndexRoute.use("/payment", PaymentRouter);
 
 export default IndexRoute;

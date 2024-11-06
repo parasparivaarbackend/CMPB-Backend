@@ -3,9 +3,7 @@ import {
   CreateEventDetails,
   DeleteEventsDetails,
   GetEvents,
-  RegisterForEvent,
   UpdateEventDetails,
-  verifyPayment,
 } from "../../controller/eventDetails/eventDetails.contoller.js";
 import {
   AdminAuthMiddleware,
@@ -27,15 +25,9 @@ EventRouter.route("/update/:id").put(
   asyncHandler(UpdateEventDetails)
 );
 
-// EventRouter.route("/delete/:id").delete(
-//   AdminAuthMiddleware,
-//   asyncHandler(DeleteEventsDetails)
-// );
-
-EventRouter.route("/pay/?").post(
-  UserAuthMiddleware,
-  asyncHandler(RegisterForEvent)
+EventRouter.route("/delete/:id").delete(
+  AdminAuthMiddleware,
+  asyncHandler(DeleteEventsDetails)
 );
-// EventRouter.route("/payment/verify").post(asyncHandler(verifyPayment));
 
 export { EventRouter };

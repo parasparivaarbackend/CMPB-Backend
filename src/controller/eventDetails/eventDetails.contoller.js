@@ -1,7 +1,9 @@
 import { z } from "zod";
-import Razorpay from "razorpay";
-import crypto from "crypto";
+
+
 import { eventdetails } from "../../model/Events/eventdetails.model.js";
+import { eventPaymentModel } from "../../model/Events/eventPayment.model.js";
+
 
 //Mostly for Admin only get for All
 const eventsSchema = z.object({
@@ -11,6 +13,11 @@ const eventsSchema = z.object({
   eventName: z.string().min(2),
   venues: z.string().min(2),
   description: z.string().min(2).optional(),
+});
+const eventPaymentSchema = z.object({
+  eventID: z.string().min(2),
+  razorpayOrderID: z.string().min(2),
+  RazorPayPaymentId: z.number().min(2),
 });
 
 const GetEvents = async (req, res) => {
@@ -28,19 +35,18 @@ const CreateEventDetails = async (req, res) => {
     return res.status(400).json({ ...validationData.error.issues });
   }
 
-  const checkDate = await eventdetails.find({availableDates:validationData.data.availableDates || null});
+  const checkDate = await eventdetails.findOne({
+    availableDates: validationData.data.availableDates,
+  });
 
-  if (checkDate && checkDate?.length > 0) {
-    return res.status(400).json({ message: "Date already exist" });
-  }
+  if (checkDate) return res.status(400).json({ message: "Date already exist" });
 
   const data = await eventdetails.create({ ...validationData.data });
-  if (!data) {
+
+  if (!data)
     return res.status(400).json({ message: "Events not inserted try again" });
-  }
-  return res
-    .status(200)
-    .json({ message: "Events Details Created Succesfull", data });
+
+  return res.status(200).json({ message: "Events Details Created Succesfull" });
 };
 
 const UpdateEventDetails = async (req, res) => {
@@ -69,65 +75,27 @@ const UpdateEventDetails = async (req, res) => {
 const DeleteEventsDetails = async (req, res) => {
   const { id } = req.params;
 
-  const data = await eventdetails.findByIdAndDelete({ _id: id });
-  if (!data) {
-    return res.status(400).json({ message: "Event Not Found" });
-  }
+  const data = await eventdetails.findByIdAndDelete(id);
+
+  if (!data) return res.status(400).json({ message: "Event Not Found" });
 
   return res.status(200).json({ message: "Event Delete Successfull", data });
 };
 
-const razorpayInstance = new Razorpay({
-  key_id: process.env.PAYMENT_KEY_ID,
-  key_secret: process.env.PAYMENT_KEY_SECRET,
-});
-
-const RegisterForEvent = async (req, res) => {
-  const { eventid, memberid } = req.query;
-
-  let receiptId;
-  if (req.baseUrl === "/api/v1/events" && eventid) {
-    receiptId = `event_${eventid}_${memberid}_${Date.now()}`;
-  } else {
-    receiptId = `Package_${memberid}_${Date.now()}`;
-  }
+const createEventPayment = async (req, res) => {
+  const data = req.body;
+  const validateData = eventPaymentSchema.safeParse(data);
+  if (!validateData.success)
+    return res.status(400).json({ ...validateData.error.issues });
 
   try {
-    const options = {
-      amount: req.body.amount * 100,
-      currency: "INR",
-      receipt: receiptId,
-      payment_capture: 1,
-      notes:
-        eventid && req.baseUrl === "/api/v1/events"
-          ? ["payment for event"]
-          : ["payment for package"],
-    };
-    const order = await razorpayInstance.orders.create(options);
-
-    return res.status(200).json({ order });
+    await eventPaymentModel.create({
+      ...validateData.data,
+      UserID: req?.user?._id,
+    });
+    return res.status(200).json({ message: "payment successfully" });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Failed to make payment" });
-  }
-};
-
-const verifyPayment = async (req, res) => {
-  console.log(req.body);
-
-  const { order_id, payment_id, signature } = req.body;
-  const generated_signature = crypto
-    .createHmac("sha256", process.env.PAYMENT_KEY_SECRET)
-    .update(order_id + "|" + payment_id)
-    .digest("hex");
-  console.log("generated_signature is ", generated_signature);
-  if (generated_signature === signature) {
-    console.log("success");
-
-    return res.json({ status: "success" });
-  } else {
-    console.log("Invalid signature");
-    return res.status(400).send("Invalid signature");
+    return res.status(500).json({ message: "Failed to update payment" });
   }
 };
 
@@ -136,6 +104,4 @@ export {
   UpdateEventDetails,
   DeleteEventsDetails,
   GetEvents,
-  RegisterForEvent,
-  verifyPayment,
 };
