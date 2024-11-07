@@ -22,11 +22,6 @@ const GetHappyStories = async (req, res) => {
 const CreateHappyStories = async (req, res) => {
     const createData = req.body;
     const img = req.file
-    console.log("img", img);
-    console.log("fike", req.files);
-    console.log("fike 1", req.file);
-
-
 
     if (!img) {
         return res.status(400).json({ message: "Image is Required" })
