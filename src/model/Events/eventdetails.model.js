@@ -1,6 +1,21 @@
 import mongoose, { Schema } from "mongoose";
+const clientDetailSchema = new Schema(
+  {
+    UserID: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+    razorpayOrderID: {
+      type: String,
+    },
+    RazorPayPaymentId: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
 
-const eventDetailsSchema = new mongoose.Schema(
+const eventDetailsSchema = new Schema(
   {
     availableDates: {
       type: String,
@@ -31,20 +46,7 @@ const eventDetailsSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    ClientDetails: [
-      {
-        UserID: {
-          type: Schema.Types.ObjectId,
-          ref: "user",
-        },
-        razorpayOrderID: {
-          type: String,
-        },
-        RazorPayPaymentId: {
-          type: String,
-        },
-      },
-    ],
+    ClientDetails: [clientDetailSchema],
   },
   { timestamps: true }
 );
