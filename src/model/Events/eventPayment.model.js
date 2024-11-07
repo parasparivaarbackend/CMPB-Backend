@@ -6,22 +6,26 @@ const eventPaymentSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "eventdetails",
     },
-    UserID: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-    },
-    razorpayOrderID: {
-      type: String,
-      trim: true,
-      require: true,
-      unique: true,
-    },
-    RazorPayPaymentId: {
-      type: String,
-      trim: true,
-      require: true,
-      unique: true,
-    },
+    ClientDetails: [
+      {
+        UserID: {
+          type: Schema.Types.ObjectId,
+          ref: "user",
+        },
+        razorpayOrderID: {
+          type: String,
+          trim: true,
+          require: true,
+          unique: true,
+        },
+        RazorPayPaymentId: {
+          type: String,
+          trim: true,
+          require: true,
+          unique: true,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
