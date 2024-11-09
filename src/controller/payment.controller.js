@@ -12,7 +12,7 @@ export const payment = async (req, res) => {
   console.log("type of amount is", typeof data);
 
 
-  if (amount <= 0)
+  if (data?.amount <= 0)
     return res.status(400).json({ message: "Invalid Amount" })
 
   let receiptId;
