@@ -8,13 +8,16 @@ const razorpayInstance = new Razorpay({
 export const payment = async (req, res) => {
   const { eventid, memberid } = req.query;
   const { amount } = req.body;
+  console.log("amount is", amount);
+  console.log("type of amount is", typeof amount);
+
 
   if (amount <= 0)
     return res.status(400).json({ message: "Invalid Amount" })
 
   let receiptId;
   if (req._parsedUrl.pathname === "/events" && eventid) {
-    receiptId = `event_${eventid}_${memberid}_${Date.now()}`;
+    receiptId = `${eventid}_${memberid}_${Date.now()}`;
   } else {
     receiptId = `Package_${memberid}_${Date.now()}`;
   }
