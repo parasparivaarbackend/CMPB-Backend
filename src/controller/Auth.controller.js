@@ -15,7 +15,7 @@ const GenerateToken = (_id, email) => {
 function generateMemberID() {
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
-  let randomID ;
+  let randomID = "";
 
   for (let i = 0; i < 3; i++) {
     const randomCharIndex = Math.floor(Math.random() * characters.length);
@@ -51,17 +51,18 @@ const registeredUser = async (req, res) => {
 
   try {
     session.startTransaction();
-
+    let existUser;
     // Loop to ensure unique MemberID
     do {
       MemberID = generateMemberID();
-      const existUser = await UserModel.findOne({
+      existUser = await UserModel.findOne({
         $or: [
           { MemberID },
           { email: validateData.data.email },
           { phone: validateData.data.phone },
         ],
       }).session(session);
+      console.log(existUser);
 
       if (!existUser) break; // Break if no existing user is found
     } while (existUser && existUser.MemberID === MemberID);
@@ -98,7 +99,7 @@ const registeredUser = async (req, res) => {
       min,
     };
 
-    await SendMailTemplate(item, template);
+    // await SendMailTemplate(item, template);
     await session.commitTransaction();
 
     return res.status(200).json({
@@ -110,7 +111,7 @@ const registeredUser = async (req, res) => {
     console.error("Transaction aborted due to an error:", error);
     return res.status(500).json({
       message: "User registration failed due to a server error.",
-      error: error.message,
+
     });
   } finally {
     session.endSession();
