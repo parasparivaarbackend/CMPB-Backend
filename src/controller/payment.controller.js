@@ -7,9 +7,9 @@ const razorpayInstance = new Razorpay({
 
 export const payment = async (req, res) => {
   const { eventid, memberid } = req.query;
-  const { amount } = req.body;
-  console.log("amount is", amount);
-  console.log("type of amount is", typeof amount);
+  const data = req.body;
+  console.log("amount is", data);
+  console.log("type of amount is", typeof data);
 
 
   if (amount <= 0)
@@ -24,7 +24,7 @@ export const payment = async (req, res) => {
 
   try {
     const options = {
-      amount: amount * 100,
+      amount: (data?.amount * 100),
       currency: "INR",
       receipt: receiptId,
       payment_capture: 1,
