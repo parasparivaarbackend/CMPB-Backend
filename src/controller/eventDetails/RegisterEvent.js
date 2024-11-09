@@ -21,7 +21,7 @@ export const UpdateRegisterPackage = async (req, res) => {
   const { amount } = req.body;
   const { id } = req.params;
 
-  if (!typeof amount === "number" && amount < 0)
+  if (!typeof amount === "number" && amount <= 0)
     return res.status(400).json({ message: "enter a valid amount" });
 
   try {

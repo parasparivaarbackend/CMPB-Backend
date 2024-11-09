@@ -15,7 +15,7 @@ const GenerateToken = (_id, email) => {
 function generateMemberID() {
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
-  let randomID = "#";
+  let randomID ;
 
   for (let i = 0; i < 3; i++) {
     const randomCharIndex = Math.floor(Math.random() * characters.length);

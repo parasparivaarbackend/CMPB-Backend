@@ -7,8 +7,6 @@ const razorpayInstance = new Razorpay({
 
 export const payment = async (req, res) => {
   const { eventid, memberid } = req.query;
-  if (memberid.includes("#"))
-    return res.status(400).json({ message: "Wrong memberID" });
 
   let receiptId;
   if (req._parsedUrl.pathname === "/events" && eventid) {
