@@ -16,14 +16,11 @@ export const payment = async (req, res) => {
     return res.status(400).json({ message: "Invalid Amount" })
 
 
-  const timestamp = Date.now();
-  const date = timestamp.toISOString().split('T')[0]
-
   let receiptId;
   if (req._parsedUrl.pathname === "/events" && eventid) {
-    receiptId = `${eventid}_${memberid}_${date}`;
+    receiptId = `event_${eventid}_${memberid}`;
   } else {
-    receiptId = `Package_${memberid}_${date}`;
+    receiptId = `Package_${memberid}`;
   }
 
   try {
