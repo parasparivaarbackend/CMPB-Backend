@@ -19,7 +19,16 @@ const eventPaymentSchema = z.object({
 });
 
 const GetEvents = async (req, res) => {
-  const data = await eventdetails.find();
+  let data;
+
+  if (req._parsedUrl.pathname === "/get-admin") {
+    data = await eventdetails.find();
+  } else {
+    data = await eventdetails.find().sort({ createdAt: -1 }).limit(1);
+    data = data[0].toObject();
+    delete data.ClientDetails;
+  }
+
   if (!data) {
     return res.status(400).json({ message: "Events Get Failed" });
   }
@@ -168,7 +177,7 @@ const UserWhoBookedEvent = async (req, res) => {
         },
       },
     ]);
-    console.log(data?.[0]);
+    return res.status(200).json({ message: "Events get Succesfull", data });
   } catch (error) {
     console.log(error);
   }

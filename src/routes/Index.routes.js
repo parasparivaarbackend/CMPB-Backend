@@ -8,6 +8,7 @@ import { HappyStoriesRouter } from "./HappyStories/HappyStories.routes.js";
 import { DeactivateRouter } from "./Deactivate/Deactivate.routes.js";
 import { ChurayeHuaPalRouter } from "./ChurayeHuaPal/ChurayeHuaPal.routes.js";
 import PaymentRouter from "./payment.routes.js";
+import RegisterPackage from "./Register/Register.routes.js";
 
 const IndexRoute = Router();
 
@@ -23,5 +24,6 @@ IndexRoute.use("/happystories", HappyStoriesRouter);
 IndexRoute.use("/deactivate-account", DeactivateRouter);
 IndexRoute.use("/churaye-hua-pal", ChurayeHuaPalRouter);
 IndexRoute.use("/payment", PaymentRouter);
+IndexRoute.use("/RegisterPackage", RegisterPackage);
 
 export default IndexRoute;

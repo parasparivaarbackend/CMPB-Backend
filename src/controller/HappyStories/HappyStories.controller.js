@@ -9,19 +9,20 @@ const HappyStoriesSchema = z.object({
     Content: z.string().min(2)
 })
 
-const GetHappyStories = async(req, res)=>{
+const GetHappyStories = async (req, res) => {
 
     const data = await happystoriesmodel.find();
     if (!data) {
-        return res.status(400).json({message:"Empty"})
+        return res.status(400).json({ message: "Empty" })
     }
-    return res.status(200).json({message:"Happy Stories get Succesfull", data})
+    return res.status(200).json({ message: "Happy Stories get Succesfull", data })
 }
 
 
 const CreateHappyStories = async (req, res) => {
     const createData = req.body;
     const img = req.file
+
     if (!img) {
         return res.status(400).json({ message: "Image is Required" })
     }
@@ -81,20 +82,20 @@ const UpdateHappyStories = async (req, res) => {
     }
 }
 
-const DeleteHappyStories = async(req, res)=>{
-    const {id} = req.params;
- 
-   try {
-     const data = await happystoriesmodel.findByIdAndDelete(id)
-     if (!data) {
-         return res.status(400).json({message:"Happy Story Not Found"})
-     }
- 
-     return res.status(200).json({ message: "Happy Story deleted Succesfull" })
-   } catch (error) {
-    console.log(error);
-    
-   }
+const DeleteHappyStories = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const data = await happystoriesmodel.findByIdAndDelete(id)
+        if (!data) {
+            return res.status(400).json({ message: "Happy Story Not Found" })
+        }
+
+        return res.status(200).json({ message: "Happy Story deleted Succesfull" })
+    } catch (error) {
+        console.log(error);
+
+    }
 
 }
 
