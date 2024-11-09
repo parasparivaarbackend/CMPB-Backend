@@ -562,10 +562,7 @@ const getMemberByID = async (req, res) => {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
     if (hasSpecialChar.test(id) || id?.length !== 6) {
       return res.status(400).json({ message: "Wrong Member ID" });
-    } else {
-      MemberID = `#` + id;
     }
-
     const user = await UserModel.findOne({ MemberID }).select(
       "--password -__v"
     );
