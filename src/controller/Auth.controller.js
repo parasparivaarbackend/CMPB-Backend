@@ -52,7 +52,7 @@ const UserSchemaValidation = z.object({
       console.log(!isUserAbove18(val));
 
       const birthDate = new Date(val); // Convert string to Date
-      return !isNaN(birthDate.getTime()) && !isUserAbove18(val);
+      return !isNaN(birthDate.getTime()) && isUserAbove18(val);
     },
     {
       message:
