@@ -2,9 +2,22 @@ import { z } from "zod";
 import mongoose from "mongoose";
 import { eventdetails } from "../../model/Events/eventdetails.model.js";
 
+function isDateInThePast(date) {
+  const inputDate = new Date(date).setHours(0, 0, 0, 0);
+  const today = new Date().setHours(0, 0, 0, 0);
+  return inputDate < today;
+}
+
 //Mostly for Admin only get for All
 const eventsSchema = z.object({
-  availableDates: z.string().min(2),
+  availableDates: z.string().refine(
+    (val) => {
+      if (val) {
+        return !isDateInThePast(val);
+      }
+    },
+    { message: "Date must not be in the past" }
+  ),
   state: z.string().min(2),
   amount: z.number().min(2),
   eventName: z.string().min(2),

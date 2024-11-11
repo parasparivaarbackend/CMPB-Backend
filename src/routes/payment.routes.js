@@ -5,7 +5,7 @@ import { UserAuthMiddleware } from "../middleware/Auth.middleware.js";
 
 const PaymentRouter = Router();
 
-PaymentRouter.route(`/events?`).post(asyncHandler(payment));
+PaymentRouter.route(`/events?`).post(UserAuthMiddleware, asyncHandler(payment));
 
 PaymentRouter.route(`/package?`).post(
   UserAuthMiddleware,

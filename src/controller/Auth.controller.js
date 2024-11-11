@@ -8,7 +8,6 @@ import { ProfileModel } from "../model/Profile/profile.model.js";
 import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
-import { error } from "console";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -26,17 +25,42 @@ function generateMemberID() {
 
   return randomID;
 }
+function isUserAbove18(birthdate) {
+  const birthDate = new Date(birthdate);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  const dayDiff = today.getDate() - birthDate.getDate();
+
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age--;
+  }
+
+  return age >= 18; // Return true if the user is 18 or older
+}
 
 const emailSchema = z.string().email("Invalid email");
 
 const UserSchemaValidation = z.object({
-  email: z.string().email(),
+  email: emailSchema,
   firstName: z.string().min(2),
   lastName: z.string().min(2),
   phone: z.string().min(10).max(12).optional(),
-  DOB: z.string().min(2).optional(),
+  DOB: z.string().refine(
+    (val) => {
+      console.log(!isUserAbove18(val));
+
+      const birthDate = new Date(val); // Convert string to Date
+      return !isNaN(birthDate.getTime()) && !isUserAbove18(val);
+    },
+    {
+      message:
+        "User must be 18 years or older, and the birthdate must be valid.",
+    }
+  ),
   password: z.string().min(6).max(16),
-  gender: z.enum(["male", "female"]).optional(),
+  gender: z.enum(["male", "female"]),
 });
 
 const registeredUser = async (req, res) => {
@@ -112,7 +136,7 @@ const registeredUser = async (req, res) => {
       min,
     };
 
-    // await SendMailTemplate(item, template);
+    await SendMailTemplate(item, template);
     await session.commitTransaction();
 
     return res.status(200).json({

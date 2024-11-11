@@ -107,7 +107,9 @@ const getAllUserByAdmin = async (req, res) => {
   const limit = Number(query.limit) || 10;
   const newPage = limit * (page - 1);
   try {
-    const data = await UserModel.find({ RegisterPackage: query.registered })
+    const data = await UserModel.find({
+      " RegisterPackage.PremiumMember": query.registered,
+    })
       .skip(newPage)
       .limit(limit)
       .select("-password");
@@ -588,9 +590,9 @@ const listFiles = async (_, res) => {
 };
 
 const packagePaymentInUserModelValidation = z.object({
-  PremiumMember: z.boolean(),
   PaymentID: z.string().min(5, "Wrong Payment ID"),
   OrderID: z.string().min(5, "Wrong Order ID"),
+  amount: z.number().min(100),
 });
 
 const UserPackageData = async (req, res) => {
@@ -601,9 +603,11 @@ const UserPackageData = async (req, res) => {
   }
   try {
     const user = await UserModel.findById(req?.user?._id);
+
     user.RegisterPackage.PremiumMember = true;
     user.RegisterPackage.PaymentID = validateData?.data?.PaymentID;
     user.RegisterPackage.OrderID = validateData?.data?.OrderID;
+    user.RegisterPackage.amount = validateData?.data?.amount;
     await user.save();
     return res.status(200).json({ message: "Payment updated successfully" });
   } catch (error) {

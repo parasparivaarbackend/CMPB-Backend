@@ -8,6 +8,9 @@ const RegisterPackage = new Schema(
       require: true,
       default: false,
     },
+    amount: {
+      type: Number,
+    },
     PaymentID: {
       type: String,
     },

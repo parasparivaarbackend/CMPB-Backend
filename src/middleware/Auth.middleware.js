@@ -10,7 +10,6 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    
 
     const user = await UserModel.findById(decodedToken._id).select(
       "-password -updatedAt -__v"
@@ -29,11 +28,9 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
     req.user = user;
 
     next();
-
   } catch (error) {
-    return res.status(500).json({ message: "Invalid Token or Token exipre" })
+    return res.status(500).json({ message: "Invalid Token or Token exipre" });
   }
-
 });
 const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
   const token =
