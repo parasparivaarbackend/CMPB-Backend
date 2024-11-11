@@ -8,6 +8,7 @@ import { ProfileModel } from "../model/Profile/profile.model.js";
 import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
+import { error } from "console";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -62,10 +63,17 @@ const registeredUser = async (req, res) => {
           { phone: validateData.data.phone },
         ],
       }).session(session);
-      console.log(existUser);
 
       if (!existUser) break; // Break if no existing user is found
     } while (existUser && existUser.MemberID === MemberID);
+
+    if (existUser) {
+      const emailExist = validateData?.data.email === existUser.email;
+      const PhoneExist = validateData?.data.phone === existUser.phone;
+      return res.status(400).json({
+        message: `${emailExist ? "Email Already Exist" : PhoneExist ? "Phone Number Already exist" : ""} `,
+      });
+    }
 
     const user = new UserModel(validateData.data);
     const profileData = new ProfileModel({ UserID: user._id });
@@ -116,7 +124,6 @@ const registeredUser = async (req, res) => {
     console.error("Transaction aborted due to an error:", error);
     return res.status(500).json({
       message: "User registration failed due to a server error.",
-
     });
   } finally {
     session.endSession();
