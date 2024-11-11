@@ -136,7 +136,6 @@ const createEventPayment = async (req, res) => {
 
 const UserWhoBookedEvent = async (req, res) => {
   const { id } = req.params;
-  console.log("inside controller", id);
   let eventID = new mongoose.Types.ObjectId(id);
   try {
     const data = await eventdetails.aggregate([
@@ -191,6 +190,9 @@ const UserWhoBookedEvent = async (req, res) => {
     return res.status(200).json({ message: "Events get Succesfull", data });
   } catch (error) {
     console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Failed to get All users who book event" });
   }
 };
 

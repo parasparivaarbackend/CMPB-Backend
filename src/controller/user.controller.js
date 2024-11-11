@@ -37,6 +37,7 @@ const UpdateProfileDetails = async (req, res) => {
     return res.status(200).json({ message: "Data updated Successfully" });
   } catch (error) {
     console.error("error is ", error);
+    return res.status(500).json({ message: "Failed to update Basic Detail" });
   }
 };
 let img;
