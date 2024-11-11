@@ -1,8 +1,6 @@
 import { z } from "zod";
-
-import { eventdetails } from "../../model/Events/eventdetails.model.js";
-
 import mongoose from "mongoose";
+import { eventdetails } from "../../model/Events/eventdetails.model.js";
 
 //Mostly for Admin only get for All
 const eventsSchema = z.object({
@@ -15,7 +13,7 @@ const eventsSchema = z.object({
 });
 const eventPaymentSchema = z.object({
   razorpayOrderID: z.string().min(2),
-  RazorPayPaymentId: z.string().min(2),
+  RazorPayPaymentID: z.string().min(2),
 });
 
 const GetEvents = async (req, res) => {
@@ -183,6 +181,40 @@ const UserWhoBookedEvent = async (req, res) => {
   }
 };
 
+const GetPurchasedUserEvent = async (req, res) => {
+  try {
+    const userEvents = await eventdetails.aggregate([
+      // Step 1: Unwind the ClientDetails array
+      { $unwind: "$ClientDetails" },
+      // Step 2: Match the specific UserID in ClientDetails
+      {
+        $match: {
+          "ClientDetails.UserID": req?.user?._id,
+        },
+      },
+
+      // Step 3: Optionally, group back to the original structure, if needed
+      {
+        $group: {
+          _id: "$_id",
+          eventName: { $first: "$eventName" },
+          availableDates: { $first: "$availableDates" },
+          venues: { $first: "$venues" },
+          state: { $first: "$state" },
+          amount: { $first: "$amount" },
+          description: { $first: "$description" },
+          ClientDetails: { $push: "$ClientDetails" }, // re-group ClientDetails matching the user
+        },
+      },
+    ]);
+
+    return res.status(200).json({ userEvents });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Failed to get User Events" });
+  }
+};
+
 export {
   CreateEventDetails,
   UpdateEventDetails,
@@ -190,4 +222,5 @@ export {
   GetEvents,
   createEventPayment,
   UserWhoBookedEvent,
+  GetPurchasedUserEvent,
 };

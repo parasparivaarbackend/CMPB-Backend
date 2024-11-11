@@ -587,6 +587,33 @@ const listFiles = async (_, res) => {
   }
 };
 
+const packagePaymentInUserModelValidation = z.object({
+  PremiumMember: z.boolean(),
+  PaymentID: z.string().min(5, "Wrong Payment ID"),
+  OrderID: z.string().min(5, "Wrong Order ID"),
+});
+
+const UserPackageData = async (req, res) => {
+  const data = req.body;
+  const validateData = packagePaymentInUserModelValidation.safeParse(data);
+  if (!validateData?.success) {
+    return res.status(400).json({ message: "wrong payment detail" });
+  }
+  try {
+    const user = await UserModel.findById(req?.user?._id);
+    user.RegisterPackage.PremiumMember = true;
+    user.RegisterPackage.PaymentID = validateData?.data?.PaymentID;
+    user.RegisterPackage.OrderID = validateData?.data?.OrderID;
+    await user.save();
+    return res.status(200).json({ message: "Payment updated successfully" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Failed to update package payment" });
+  }
+};
+
 export {
   getAllUserByAdmin,
   getUserById,
@@ -597,4 +624,5 @@ export {
   listFiles,
   ManualDeleteImage,
   getMemberByID,
+  UserPackageData,
 };

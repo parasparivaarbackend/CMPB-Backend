@@ -11,6 +11,7 @@ import {
   ProfileImageDelete,
   ProfileImageUpdate,
   UpdateProfileDetails,
+  UserPackageData,
 } from "../controller/user.controller.js";
 import {
   AdminAuthMiddleware,
@@ -54,6 +55,10 @@ UserRouter.route("/member/?").get(
 UserRouter.route("/getUser/:id").get(
   UserAuthMiddleware,
   asyncHandler(getUserById)
+);
+UserRouter.route("/paymentUpdate").put(
+  UserAuthMiddleware,
+  asyncHandler(UserPackageData)
 );
 
 export default UserRouter;

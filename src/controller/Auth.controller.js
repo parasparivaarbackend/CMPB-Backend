@@ -1,13 +1,13 @@
 import { z } from "zod";
 import axios from "axios";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { StatusCodes } from "http-status-codes";
 import { UserModel } from "../model/user.model.js";
 import { ProfileModel } from "../model/Profile/profile.model.js";
 import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
-import mongoose from "mongoose";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -15,7 +15,7 @@ const GenerateToken = (_id, email) => {
 function generateMemberID() {
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
-  let randomID ;
+  let randomID = "";
 
   for (let i = 0; i < 3; i++) {
     const randomCharIndex = Math.floor(Math.random() * characters.length);
@@ -72,6 +72,11 @@ const registeredUser = async (req, res) => {
     // Set references and save profile and user
     user.ProfileID = profileData._id;
     user.MemberID = MemberID;
+
+    user.RegisterPackage = {
+      PremiumMember: false,
+    };
+
     await profileData.save({ session });
     const savedUser = await user.save({ session });
 
