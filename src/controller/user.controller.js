@@ -100,7 +100,8 @@ const getAllUserByAdmin = async (req, res) => {
 
   if (
     typeof query.registered !== "string" &&
-    (query.registered !== "false" || query.registered !== "true")
+    query.registered !== "false" &&
+    query.registered !== "true"
   )
     return res.status(400).json({ message: "Enter Valid Value" });
 
