@@ -10,6 +10,7 @@ const razorpayInstance = new Razorpay({
 export const payment = async (req, res) => {
   const { eventid, memberid } = req.query;
   const data = req.body;
+  console.log(req._parsedUrl.pathname);
 
   if (data?.amount <= 0)
     return res.status(400).json({ message: "Invalid Amount" });
@@ -28,8 +29,9 @@ export const payment = async (req, res) => {
           .json({ message: "You Already Booked this event." });
       }
       receiptId = `event_${eventid}_${memberid}`;
-    } else {
-      const user = UserModel.findById(req?.user?._id);
+    } else if (req._parsedUrl.pathname === "/package") {
+      const user = await UserModel.findById(req?.user?._id);
+
       if (user?.RegisterPackage?.PremiumMember) {
         return res.status(400).json({ message: "Already Premium Member" });
       }
