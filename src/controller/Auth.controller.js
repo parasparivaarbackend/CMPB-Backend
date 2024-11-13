@@ -1,13 +1,14 @@
 import { z } from "zod";
 import axios from "axios";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { StatusCodes } from "http-status-codes";
 import { UserModel } from "../model/user.model.js";
 import { ProfileModel } from "../model/Profile/profile.model.js";
 import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
-import mongoose from "mongoose";
+import { isUserAbove18 } from "../utils/isUserAbove18.js";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -29,13 +30,22 @@ function generateMemberID() {
 const emailSchema = z.string().email("Invalid email");
 
 const UserSchemaValidation = z.object({
-  email: z.string().email(),
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
+  email: emailSchema,
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
   phone: z.string().min(10).max(12).optional(),
-  DOB: z.string().min(2).optional(),
+  DOB: z.string().refine(
+    (val) => {
+      const birthDate = new Date(val); // Convert string to Date
+      return !isNaN(birthDate.getTime()) && isUserAbove18(val);
+    },
+    {
+      message:
+        "User must be 18 years or older, and the birthdate must be valid.",
+    }
+  ),
   password: z.string().min(6).max(16),
-  gender: z.enum(["male", "female"]).optional(),
+  gender: z.enum(["male", "female"]),
 });
 
 const registeredUser = async (req, res) => {
@@ -62,10 +72,17 @@ const registeredUser = async (req, res) => {
           { phone: validateData.data.phone },
         ],
       }).session(session);
-      console.log(existUser);
 
       if (!existUser) break; // Break if no existing user is found
     } while (existUser && existUser.MemberID === MemberID);
+
+    if (existUser) {
+      const emailExist = validateData?.data.email === existUser.email;
+      const PhoneExist = validateData?.data.phone === existUser.phone;
+      return res.status(400).json({
+        message: `${emailExist ? "Email Already Exist" : PhoneExist ? "Phone Number Already exist" : ""} `,
+      });
+    }
 
     const user = new UserModel(validateData.data);
     const profileData = new ProfileModel({ UserID: user._id });
@@ -73,6 +90,11 @@ const registeredUser = async (req, res) => {
     // Set references and save profile and user
     user.ProfileID = profileData._id;
     user.MemberID = MemberID;
+
+    user.RegisterPackage = {
+      PremiumMember: false,
+    };
+
     await profileData.save({ session });
     const savedUser = await user.save({ session });
 
@@ -99,7 +121,7 @@ const registeredUser = async (req, res) => {
       min,
     };
 
-    // await SendMailTemplate(item, template);
+    await SendMailTemplate(item, template);
     await session.commitTransaction();
 
     return res.status(200).json({
@@ -111,7 +133,6 @@ const registeredUser = async (req, res) => {
     console.error("Transaction aborted due to an error:", error);
     return res.status(500).json({
       message: "User registration failed due to a server error.",
-
     });
   } finally {
     session.endSession();

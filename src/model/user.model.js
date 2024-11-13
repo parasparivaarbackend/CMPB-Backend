@@ -1,6 +1,26 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
+const RegisterPackage = new Schema(
+  {
+    PremiumMember: {
+      type: Boolean,
+      require: true,
+      default: false,
+    },
+    amount: {
+      type: Number,
+    },
+    PaymentID: {
+      type: String,
+    },
+    OrderID: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
 const UserSchema = new mongoose.Schema(
   {
     MemberID: {
@@ -39,7 +59,6 @@ const UserSchema = new mongoose.Schema(
         type: String,
       },
     },
-
     email: {
       type: String,
       required: [true, "email is required"],
@@ -70,9 +89,7 @@ const UserSchema = new mongoose.Schema(
       default: false,
     },
     RegisterPackage: {
-      type: Boolean,
-      require: true,
-      default: false,
+      type: RegisterPackage,
     },
     ProfileID: {
       type: Schema.Types.ObjectId,

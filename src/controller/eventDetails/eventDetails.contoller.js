@@ -1,12 +1,23 @@
 import { z } from "zod";
-
+import mongoose from "mongoose";
 import { eventdetails } from "../../model/Events/eventdetails.model.js";
 
-import mongoose from "mongoose";
+function isDateInThePast(date) {
+  const inputDate = new Date(date).setHours(0, 0, 0, 0);
+  const today = new Date().setHours(0, 0, 0, 0);
+  return inputDate < today;
+}
 
 //Mostly for Admin only get for All
 const eventsSchema = z.object({
-  availableDates: z.string().min(2),
+  availableDates: z.string().refine(
+    (val) => {
+      if (val) {
+        return !isDateInThePast(val);
+      }
+    },
+    { message: "Date must not be in the past" }
+  ),
   state: z.string().min(2),
   amount: z.number().min(2),
   eventName: z.string().min(2),
@@ -15,7 +26,7 @@ const eventsSchema = z.object({
 });
 const eventPaymentSchema = z.object({
   razorpayOrderID: z.string().min(2),
-  RazorPayPaymentId: z.string().min(2),
+  RazorPayPaymentID: z.string().min(2),
 });
 
 const GetEvents = async (req, res) => {
@@ -125,7 +136,6 @@ const createEventPayment = async (req, res) => {
 
 const UserWhoBookedEvent = async (req, res) => {
   const { id } = req.params;
-  console.log("inside controller", id);
   let eventID = new mongoose.Types.ObjectId(id);
   try {
     const data = await eventdetails.aggregate([
@@ -180,6 +190,43 @@ const UserWhoBookedEvent = async (req, res) => {
     return res.status(200).json({ message: "Events get Succesfull", data });
   } catch (error) {
     console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Failed to get All users who book event" });
+  }
+};
+
+const GetPurchasedUserEvent = async (req, res) => {
+  try {
+    const userEvents = await eventdetails.aggregate([
+      // Step 1: Unwind the ClientDetails array
+      { $unwind: "$ClientDetails" },
+      // Step 2: Match the specific UserID in ClientDetails
+      {
+        $match: {
+          "ClientDetails.UserID": req?.user?._id,
+        },
+      },
+
+      // Step 3: Optionally, group back to the original structure, if needed
+      {
+        $group: {
+          _id: "$_id",
+          eventName: { $first: "$eventName" },
+          availableDates: { $first: "$availableDates" },
+          venues: { $first: "$venues" },
+          state: { $first: "$state" },
+          amount: { $first: "$amount" },
+          description: { $first: "$description" },
+          ClientDetails: { $push: "$ClientDetails" }, // re-group ClientDetails matching the user
+        },
+      },
+    ]);
+
+    return res.status(200).json({ userEvents });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Failed to get User Events" });
   }
 };
 
@@ -190,4 +237,5 @@ export {
   GetEvents,
   createEventPayment,
   UserWhoBookedEvent,
+  GetPurchasedUserEvent,
 };

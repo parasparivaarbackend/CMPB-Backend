@@ -1,4 +1,6 @@
 import Razorpay from "razorpay";
+import { UserModel } from "../model/user.model.js";
+import { eventdetails } from "../model/Events/eventdetails.model.js";
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.PAYMENT_KEY_ID,
@@ -7,17 +9,36 @@ const razorpayInstance = new Razorpay({
 
 export const payment = async (req, res) => {
   const { eventid, memberid } = req.query;
+  const data = req.body;
+  console.log(req._parsedUrl.pathname);
 
-  let receiptId;
-  if (req._parsedUrl.pathname === "/events" && eventid) {
-    receiptId = `event_${eventid}_${memberid}_${Date.now()}`;
-  } else {
-    receiptId = `Package_${memberid}_${Date.now()}`;
-  }
-
+  if (data?.amount <= 0)
+    return res.status(400).json({ message: "Invalid Amount" });
   try {
+    let receiptId;
+
+    if (req._parsedUrl.pathname === "/events" && eventid) {
+      const existingEvent = await eventdetails.findOne({
+        _id: eventid,
+        "ClientDetails.UserID": req?.user?._id,
+      });
+
+      if (existingEvent) {
+        return res
+          .status(400)
+          .json({ message: "You Already Booked this event." });
+      }
+      receiptId = `event_${eventid}_${memberid}`;
+    } else if (req._parsedUrl.pathname === "/package") {
+      const user = await UserModel.findById(req?.user?._id);
+
+      if (user?.RegisterPackage?.PremiumMember) {
+        return res.status(400).json({ message: "Already Premium Member" });
+      }
+      receiptId = `Package_${memberid}`;
+    }
     const options = {
-      amount: req.body.amount * 100,
+      amount: data?.amount * 100,
       currency: "INR",
       receipt: receiptId,
       payment_capture: 1,

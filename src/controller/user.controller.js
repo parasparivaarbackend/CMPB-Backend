@@ -7,12 +7,22 @@ import {
   UploadBucketHandler,
 } from "../utils/CloudBucketHandler.js";
 import { ProfileModel } from "../model/Profile/profile.model.js";
+import { isUserAbove18 } from "../utils/isUserAbove18.js";
 
 export const UserProfileSchemaValidation = z.object({
-  firstName: z.string().min(3).max(50),
-  lastName: z.string().min(3).max(50),
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
   gender: z.enum(["male", "female"]),
-  DOB: z.string(),
+  DOB: z.string().refine(
+    (val) => {
+      const birthDate = new Date(val);
+      return !isNaN(birthDate.getTime()) && isUserAbove18(val);
+    },
+    {
+      message:
+        "User must be 18 years or older, and the birthdate must be valid.",
+    }
+  ),
 });
 
 const UpdateProfileDetails = async (req, res) => {
@@ -37,6 +47,7 @@ const UpdateProfileDetails = async (req, res) => {
     return res.status(200).json({ message: "Data updated Successfully" });
   } catch (error) {
     console.error("error is ", error);
+    return res.status(500).json({ message: "Failed to update Basic Detail" });
   }
 };
 let img;
@@ -99,7 +110,8 @@ const getAllUserByAdmin = async (req, res) => {
 
   if (
     typeof query.registered !== "string" &&
-    (query.registered !== "false" || query.registered !== "true")
+    query?.registered !== "false" &&
+    query?.registered !== "true"
   )
     return res.status(400).json({ message: "Enter Valid Value" });
 
@@ -107,7 +119,9 @@ const getAllUserByAdmin = async (req, res) => {
   const limit = Number(query.limit) || 10;
   const newPage = limit * (page - 1);
   try {
-    const data = await UserModel.find({ RegisterPackage: query.registered })
+    const data = await UserModel.find({
+      "RegisterPackage.PremiumMember": query?.registered,
+    })
       .skip(newPage)
       .limit(limit)
       .select("-password");
@@ -537,15 +551,21 @@ const getUserById = async (req, res) => {
 };
 
 const getActiveUser = async (req, res) => {
-  const gender = req.user.gender === "male" ? "female" : "male";
+  const gender = req?.user?.gender === "male" ? "female" : "male";
+  const { query } = req;
+  const index = Number(query?.index) || 1;
+  const limit = Number(query?.limit) || 10;
+  const newLimit = index * limit;
 
   try {
     const AllUser = await UserModel.find({
       gender,
       active: true,
-    }).select("-password -role -__v");
+    })
+      .limit(newLimit)
+      .select("-password -role -__v");
 
-    if (!AllUser || AllUser.length === 0)
+    if (!AllUser || AllUser?.length === 0)
       return res.status(400).json({ message: "Failed to Fetch User" });
 
     return res.status(200).json({ message: "All User Data", data: AllUser });
@@ -557,15 +577,15 @@ const getActiveUser = async (req, res) => {
 
 const getMemberByID = async (req, res) => {
   try {
-    const id = req.query.id;
+    const id = req?.query?.id;
+
     let MemberID;
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
     if (hasSpecialChar.test(id) || id?.length !== 6) {
       return res.status(400).json({ message: "Wrong Member ID" });
     }
-    const user = await UserModel.findOne({ MemberID }).select(
-      "--password -__v"
-    );
+    const user = await UserModel.findOne(MemberID).select("-password -__v");
+
     if (!user) {
       return res.status(400).json({ message: "Member Not Found" });
     }
@@ -587,6 +607,35 @@ const listFiles = async (_, res) => {
   }
 };
 
+const packagePaymentInUserModelValidation = z.object({
+  PaymentID: z.string().min(5, "Wrong Payment ID"),
+  OrderID: z.string().min(5, "Wrong Order ID"),
+  amount: z.number().min(100),
+});
+
+const UserPackageData = async (req, res) => {
+  const data = req.body;
+  const validateData = packagePaymentInUserModelValidation.safeParse(data);
+  if (!validateData?.success) {
+    return res.status(400).json({ message: "wrong payment detail" });
+  }
+  try {
+    const user = await UserModel.findById(req?.user?._id);
+
+    user.RegisterPackage.PremiumMember = true;
+    user.RegisterPackage.PaymentID = validateData?.data?.PaymentID;
+    user.RegisterPackage.OrderID = validateData?.data?.OrderID;
+    user.RegisterPackage.amount = validateData?.data?.amount;
+    await user.save();
+    return res.status(200).json({ message: "Payment updated successfully" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Failed to update package payment" });
+  }
+};
+
 export {
   getAllUserByAdmin,
   getUserById,
@@ -597,4 +646,5 @@ export {
   listFiles,
   ManualDeleteImage,
   getMemberByID,
+  UserPackageData,
 };

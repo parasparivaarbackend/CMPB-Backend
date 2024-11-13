@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+
 const clientDetailSchema = new Schema(
   {
     UserID: {
@@ -8,7 +9,7 @@ const clientDetailSchema = new Schema(
     razorpayOrderID: {
       type: String,
     },
-    RazorPayPaymentId: {
+    RazorPayPaymentID: {
       type: String,
     },
   },

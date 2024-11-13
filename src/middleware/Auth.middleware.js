@@ -4,15 +4,14 @@ import { UserModel } from "../model/user.model.js";
 
 const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
   const token =
-    req.cookies?.token || req.headers.authorization.replace("Bearer ", "");
+    req.cookies?.token || req.headers?.authorization.replace("Bearer ", "");
 
   if (!token) return res.status(400).json({ message: "Unauthenticated" });
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    
 
-    const user = await UserModel.findById(decodedToken._id).select(
+    const user = await UserModel.findById(decodedToken?._id).select(
       "-password -updatedAt -__v"
     );
 
@@ -29,21 +28,19 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
     req.user = user;
 
     next();
-
   } catch (error) {
-    return res.status(500).json({ message: "Invalid Token or Token exipre" })
+    return res.status(500).json({ message: "Invalid Token or Token exipre" });
   }
-
 });
 const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
   const token =
-    req.cookies?.token || req.headers.authorization?.replace("Bearer ", "");
+    req.cookies?.token || req.headers?.authorization?.replace("Bearer ", "");
 
   if (!token) return res.status(400).json({ message: "Unauthenticated" });
 
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
-  const admin = await UserModel.findById(decodedToken._id).select(
+  const admin = await UserModel.findById(decodedToken?._id).select(
     "-password -__v"
   );
 
