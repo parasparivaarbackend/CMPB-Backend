@@ -100,8 +100,8 @@ const getAllUserByAdmin = async (req, res) => {
 
   if (
     typeof query.registered !== "string" &&
-    query.registered !== "false" &&
-    query.registered !== "true"
+    query?.registered !== "false" &&
+    query?.registered !== "true"
   )
     return res.status(400).json({ message: "Enter Valid Value" });
 
@@ -110,7 +110,7 @@ const getAllUserByAdmin = async (req, res) => {
   const newPage = limit * (page - 1);
   try {
     const data = await UserModel.find({
-      " RegisterPackage.PremiumMember": query.registered,
+      "RegisterPackage.PremiumMember": query?.registered,
     })
       .skip(newPage)
       .limit(limit)
@@ -541,15 +541,21 @@ const getUserById = async (req, res) => {
 };
 
 const getActiveUser = async (req, res) => {
-  const gender = req.user.gender === "male" ? "female" : "male";
+  const gender = req?.user?.gender === "male" ? "female" : "male";
+  const { query } = req;
+  const index = Number(query?.index) || 1;
+  const limit = Number(query?.limit) || 10;
+  const newLimit = index * limit;
 
   try {
     const AllUser = await UserModel.find({
       gender,
       active: true,
-    }).select("-password -role -__v");
+    })
+      .limit(newLimit)
+      .select("-password -role -__v");
 
-    if (!AllUser || AllUser.length === 0)
+    if (!AllUser || AllUser?.length === 0)
       return res.status(400).json({ message: "Failed to Fetch User" });
 
     return res.status(200).json({ message: "All User Data", data: AllUser });
@@ -561,7 +567,7 @@ const getActiveUser = async (req, res) => {
 
 const getMemberByID = async (req, res) => {
   try {
-    const id = req.query.id;
+    const id = req?.query?.id;
     let MemberID;
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
     if (hasSpecialChar.test(id) || id?.length !== 6) {
