@@ -7,12 +7,22 @@ import {
   UploadBucketHandler,
 } from "../utils/CloudBucketHandler.js";
 import { ProfileModel } from "../model/Profile/profile.model.js";
+import { isUserAbove18 } from "../utils/isUserAbove18.js";
 
 export const UserProfileSchemaValidation = z.object({
   firstName: z.string().min(3).max(50),
   lastName: z.string().min(3).max(50),
   gender: z.enum(["male", "female"]),
-  DOB: z.string(),
+  DOB: z.string().refine(
+    (val) => {
+      const birthDate = new Date(val);
+      return !NaN(birthDate.getTime()) && isUserAbove18(val);
+    },
+    {
+      message:
+        "User must be 18 years or older, and the birthdate must be valid.",
+    }
+  ),
 });
 
 const UpdateProfileDetails = async (req, res) => {
