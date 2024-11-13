@@ -52,6 +52,10 @@ UserRouter.route("/member/?").get(
   UserAuthMiddleware,
   asyncHandler(getMemberByID)
 );
+UserRouter.route("/admin-member/?").get(
+  AdminAuthMiddleware,
+  asyncHandler(getMemberByID)
+);
 UserRouter.route("/getUser/:id").get(
   UserAuthMiddleware,
   asyncHandler(getUserById)

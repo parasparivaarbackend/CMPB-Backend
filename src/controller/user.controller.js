@@ -578,14 +578,14 @@ const getActiveUser = async (req, res) => {
 const getMemberByID = async (req, res) => {
   try {
     const id = req?.query?.id;
+
     let MemberID;
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
     if (hasSpecialChar.test(id) || id?.length !== 6) {
       return res.status(400).json({ message: "Wrong Member ID" });
     }
-    const user = await UserModel.findOne({ MemberID }).select(
-      "--password -__v"
-    );
+    const user = await UserModel.findOne(MemberID).select("-password -__v");
+
     if (!user) {
       return res.status(400).json({ message: "Member Not Found" });
     }
