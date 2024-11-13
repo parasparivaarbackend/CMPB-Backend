@@ -396,10 +396,12 @@ const getAdminProfileData = async (req, res) => {
   if (!objectId) return res.status(400).json({ message: "Wrong Profile" });
 
   try {
+    console.log(objectId);
+
     const profileDetails = await ProfileModel.aggregate([
       {
         $match: {
-          _id: objectId,
+          UserID: objectId,
         },
       },
       {
