@@ -10,8 +10,8 @@ import { ProfileModel } from "../model/Profile/profile.model.js";
 import { isUserAbove18 } from "../utils/isUserAbove18.js";
 
 export const UserProfileSchemaValidation = z.object({
-  firstName: z.string().min(3).max(50),
-  lastName: z.string().min(3).max(50),
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
   gender: z.enum(["male", "female"]),
   DOB: z.string().refine(
     (val) => {

@@ -31,8 +31,8 @@ const emailSchema = z.string().email("Invalid email");
 
 const UserSchemaValidation = z.object({
   email: emailSchema,
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
   phone: z.string().min(10).max(12).optional(),
   DOB: z.string().refine(
     (val) => {
