@@ -16,7 +16,7 @@ export const UserProfileSchemaValidation = z.object({
   DOB: z.string().refine(
     (val) => {
       const birthDate = new Date(val);
-      return !NaN(birthDate.getTime()) && isUserAbove18(val);
+      return !isNaN(birthDate.getTime()) && isUserAbove18(val);
     },
     {
       message:
