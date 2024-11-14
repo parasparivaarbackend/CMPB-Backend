@@ -33,7 +33,7 @@ const partnerExpectationSchema = new mongoose.Schema({
     trim: true,
   },
   Children: {
-    type: Boolean,
+    type: String,
     require: true,
     trim: true,
   },
