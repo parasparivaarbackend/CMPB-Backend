@@ -12,7 +12,6 @@ const validatePhysicalAttribute = z.object({
 const CreatePhysicalAttribute = async (req, res) => {
   const ProfileID = req.user.ProfileID.toString();
   const PhysicalAttributeData = req.body;
-  console.log("ProfileID in controller ", ProfileID);
 
   const validateData = validatePhysicalAttribute.safeParse(
     PhysicalAttributeData
@@ -22,7 +21,6 @@ const CreatePhysicalAttribute = async (req, res) => {
   }
 
   const checkData = await PhysicalAttributeModel.findOne({ ProfileID });
-  console.log("checkData", checkData);
 
   if (checkData) {
     return res.status(400).json({ message: "PhysicalAttribute already exist" });
@@ -32,7 +30,6 @@ const CreatePhysicalAttribute = async (req, res) => {
     ProfileID,
     ...validateData.data,
   });
-  console.log("data", data);
 
   return res
     .status(200)

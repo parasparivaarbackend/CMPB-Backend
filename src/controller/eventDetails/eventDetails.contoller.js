@@ -106,7 +106,6 @@ const createEventPayment = async (req, res) => {
   const validateData = eventPaymentSchema.safeParse(data);
   if (!validateData.success)
     return res.status(400).json({ ...validateData.error.issues });
-  console.log(validateData.data);
 
   try {
     const existingEvent = await eventdetails.findOne({

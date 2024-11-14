@@ -10,7 +10,6 @@ const razorpayInstance = new Razorpay({
 export const payment = async (req, res) => {
   const { eventid, memberid } = req.query;
   const data = req.body;
-  console.log(req._parsedUrl.pathname);
 
   if (data?.amount <= 0)
     return res.status(400).json({ message: "Invalid Amount" });
