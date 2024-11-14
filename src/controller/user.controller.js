@@ -181,7 +181,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "presentaddressmodels",
-          localField: "PresentAddress",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "addressDetails",
           pipeline: [
@@ -205,7 +205,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "educations",
-          localField: "education",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "educationDetails",
           pipeline: [
@@ -229,7 +229,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "careers",
-          localField: "careers",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "careerDetails",
           pipeline: [
@@ -253,7 +253,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "physicalattributes",
-          localField: "physicalattributes",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "physicalattributeDetails",
           pipeline: [
@@ -278,7 +278,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "languages",
-          localField: "languages",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "languageDetails",
           pipeline: [
@@ -300,7 +300,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "hoobiesandintrests",
-          localField: "hoobiesandintrests",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "hoobiesandintrestDetails",
           pipeline: [
@@ -330,7 +330,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "personalattitudes",
-          localField: "personalattitudes",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "personalattitudeDetails",
           pipeline: [
@@ -352,7 +352,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "residencyinfos",
-          localField: "residencyinfos",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "residencyinfoDetails",
           pipeline: [
@@ -376,7 +376,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "backgrounds",
-          localField: "backgrounds",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "backgroundDetails",
           pipeline: [
@@ -401,7 +401,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "lifestyles",
-          localField: "lifestyles",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "lifestyleDetails",
           pipeline: [
@@ -425,7 +425,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "astronomics",
-          localField: "astronomics",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "astronomicDetails",
           pipeline: [
@@ -449,7 +449,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "permanentaddresses",
-          localField: "permanentaddress",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "permanentaddressDetails",
           pipeline: [
@@ -473,7 +473,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "familyinfos",
-          localField: "familyinfos",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "familyinfoDetails",
           pipeline: [
@@ -496,7 +496,7 @@ const getUserById = async (req, res) => {
       {
         $lookup: {
           from: "partnerexpectations",
-          localField: "partnerexpectations",
+          localField: "_id",
           foreignField: "ProfileID",
           as: "partnerexpectationDetails",
           pipeline: [
