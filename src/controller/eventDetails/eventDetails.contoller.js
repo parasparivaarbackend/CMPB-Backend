@@ -36,6 +36,9 @@ const GetEvents = async (req, res) => {
     data = await eventdetails.find();
   } else {
     data = await eventdetails.find().sort({ createdAt: -1 }).limit(1);
+    if (!data || data.length === 0)
+      return res.status(200).json({ message: "No event found" });
+
     data = data[0].toObject();
     delete data.ClientDetails;
   }
