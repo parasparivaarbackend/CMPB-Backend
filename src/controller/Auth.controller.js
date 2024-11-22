@@ -148,7 +148,7 @@ const loginUser = async (req, res) => {
   }
   if (!existUser.active) {
     return res
-      .status(302)
+      .status(200)
       .json({ message: "Please verify your account first" });
   }
 
