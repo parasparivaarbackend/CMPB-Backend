@@ -10,7 +10,7 @@ const TotalUserForCurrentEvent = async (req, res) => {
     return res.status(200).json({
       message: "Total Number of users for the current event",
       data: {
-        Users: data?.ClientDetails?.length ?? 0,
+        Users: data[0]?.ClientDetails?.length ?? 0,
       },
     });
   } catch (error) {
