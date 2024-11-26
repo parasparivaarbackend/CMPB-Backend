@@ -18,7 +18,7 @@ const GetBlog = async (req, res) => {
     if (!data || data?.length < 1) {
       return res.status(200).json({ message: "Blog Empty" });
     }
-    return res.status(400).json({ message: "Blog Fetch succesfull", data });
+    return res.status(200).json({ message: "Blog Fetch succesfull", data });
   } catch (error) {
     console.log(error);
   }
