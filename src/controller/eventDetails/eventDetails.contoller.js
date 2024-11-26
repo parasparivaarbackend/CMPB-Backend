@@ -33,9 +33,89 @@ const GetEvents = async (req, res) => {
   let data;
 
   if (req._parsedUrl.pathname === "/get-admin") {
-    data = await eventdetails.find();
+    const { query } = req;
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 5;
+    const newPage = (page - 1) * limit;
+
+    data = await eventdetails.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "ClientDetails.UserID",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      // Add fields, and map through each client to merge the user-specific fields including RegisterPackage
+      {
+        $addFields: {
+          ClientDetails: {
+            $map: {
+              input: "$ClientDetails",
+              as: "client",
+              in: {
+                $let: {
+                  vars: {
+                    userDetail: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: "$userDetails",
+                            as: "user",
+                            cond: { $eq: ["$$user._id", "$$client.UserID"] },
+                          },
+                        },
+                        0,
+                      ],
+                    },
+                  },
+                  in: {
+                    $mergeObjects: [
+                      "$$client", // Keep existing client data
+                      {
+                        BookedOn: "$$client.createdAt", // Rename createdAt to BookedOn
+                        UserDetails: {
+                          firstName: "$$userDetail.firstName",
+                          lastName: "$$userDetail.lastName",
+                          email: "$$userDetail.email",
+                          phone: "$$userDetail.phone",
+                          MemberID: "$$userDetail.MemberID",
+                          // Add profileImage if it exists for this user
+                          profileImage: "$$userDetail.profileImage.ImageURL",
+                          // RegisterPackage details specific to the user
+                          RegisterPackage:
+                            "$$userDetail.RegisterPackage.PremiumMember",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      {
+        $project: {
+          userDetails: 0,
+          "ClientDetails.createdAt": 0,
+          "ClientDetails.updatedAt": 0,
+        },
+      },
+      {
+        $skip: newPage,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
   } else {
-    data = await eventdetails.find().sort({ createdAt: -1 }).limit(1);
+    data = await eventdetails.find().sort({ availableDates: -1 }).limit(1);
+    if (!data || data.length === 0)
+      return res.status(200).json({ message: "No event found" });
+
     data = data[0].toObject();
     delete data.ClientDetails;
   }
@@ -106,7 +186,6 @@ const createEventPayment = async (req, res) => {
   const validateData = eventPaymentSchema.safeParse(data);
   if (!validateData.success)
     return res.status(400).json({ ...validateData.error.issues });
-  console.log(validateData.data);
 
   try {
     const existingEvent = await eventdetails.findOne({

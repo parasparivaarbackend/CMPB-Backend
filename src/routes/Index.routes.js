@@ -9,6 +9,7 @@ import { DeactivateRouter } from "./Deactivate/Deactivate.routes.js";
 import { ChurayeHuaPalRouter } from "./ChurayeHuaPal/ChurayeHuaPal.routes.js";
 import PaymentRouter from "./payment.routes.js";
 import RegisterPackage from "./Register/Register.routes.js";
+import DashboardRouter from "./Dashboard.routes.js";
 
 const IndexRoute = Router();
 
@@ -25,5 +26,6 @@ IndexRoute.use("/deactivate-account", DeactivateRouter);
 IndexRoute.use("/churaye-hua-pal", ChurayeHuaPalRouter);
 IndexRoute.use("/payment", PaymentRouter);
 IndexRoute.use("/RegisterPackage", RegisterPackage);
+IndexRoute.use("/dashboard", DashboardRouter);
 
 export default IndexRoute;

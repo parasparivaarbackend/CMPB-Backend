@@ -38,7 +38,6 @@ const UpdatePresentAddress = async (req, res) => {
   const data = req.body;
 
   const validateData = validateSchema.safeParse(data);
-  // console.log(validateData.error.issues);
 
   if (validateData.success === false) {
     return res.status(400).json({ ...validateData.error.issues });

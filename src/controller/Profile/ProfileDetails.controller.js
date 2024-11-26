@@ -15,14 +15,14 @@ const getProfileData = async (req, res) => {
     const profileDetails = await ProfileModel.aggregate([
       {
         $match: {
-          _id: req.user.ProfileID,
+          _id: req.user?.ProfileID,
         },
       },
       {
         $lookup: {
           from: "presentaddressmodels",
-          localField: "PresentAddress",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "addressDetails",
           pipeline: [
             {
@@ -45,8 +45,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "educations",
-          localField: "education",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "educationDetails",
           pipeline: [
             {
@@ -69,8 +69,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "careers",
-          localField: "careers",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "careerDetails",
           pipeline: [
             {
@@ -93,8 +93,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "physicalattributes",
-          localField: "physicalattributes",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "physicalattributeDetails",
           pipeline: [
             {
@@ -118,8 +118,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "languages",
-          localField: "languages",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "languageDetails",
           pipeline: [
             {
@@ -140,8 +140,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "hoobiesandintrests",
-          localField: "hoobiesandintrests",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "hoobiesandintrestDetails",
           pipeline: [
             {
@@ -170,8 +170,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "personalattitudes",
-          localField: "personalattitudes",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "personalattitudeDetails",
           pipeline: [
             {
@@ -192,8 +192,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "residencyinfos",
-          localField: "residencyinfos",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "residencyinfoDetails",
           pipeline: [
             {
@@ -216,8 +216,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "backgrounds",
-          localField: "backgrounds",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "backgroundDetails",
           pipeline: [
             {
@@ -241,8 +241,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "lifestyles",
-          localField: "lifestyles",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "lifestyleDetails",
           pipeline: [
             {
@@ -265,8 +265,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "astronomics",
-          localField: "astronomics",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "astronomicDetails",
           pipeline: [
             {
@@ -289,8 +289,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "permanentaddresses",
-          localField: "permanentaddress",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "permanentaddressDetails",
           pipeline: [
             {
@@ -313,8 +313,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "familyinfos",
-          localField: "familyinfos",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "familyinfoDetails",
           pipeline: [
             {
@@ -336,8 +336,8 @@ const getProfileData = async (req, res) => {
       {
         $lookup: {
           from: "partnerexpectations",
-          localField: "partnerexpectations",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "partnerexpectationDetails",
           pipeline: [
             {
@@ -379,7 +379,6 @@ const getProfileData = async (req, res) => {
     if (!profileDetails) {
       return res.status(400).json({ message: "User do not exist" });
     }
-
     return res.status(200).json({
       message: "User Profile Data",
       profileDetails: { ...profileDetails[0], user: req.user },
@@ -399,7 +398,7 @@ const getAdminProfileData = async (req, res) => {
     const profileDetails = await ProfileModel.aggregate([
       {
         $match: {
-          _id: objectId,
+          UserID: objectId,
         },
       },
       {
@@ -435,8 +434,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "presentaddressmodels",
-          localField: "PresentAddress",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "addressDetails",
           pipeline: [
             {
@@ -459,8 +458,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "educations",
-          localField: "education",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "educationDetails",
           pipeline: [
             {
@@ -483,8 +482,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "careers",
-          localField: "careers",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "careerDetails",
           pipeline: [
             {
@@ -507,8 +506,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "physicalattributes",
-          localField: "physicalattributes",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "physicalattributeDetails",
           pipeline: [
             {
@@ -532,8 +531,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "languages",
-          localField: "languages",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "languageDetails",
           pipeline: [
             {
@@ -554,8 +553,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "hoobiesandintrests",
-          localField: "hoobiesandintrests",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "hoobiesandintrestDetails",
           pipeline: [
             {
@@ -584,8 +583,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "personalattitudes",
-          localField: "personalattitudes",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "personalattitudeDetails",
           pipeline: [
             {
@@ -606,8 +605,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "residencyinfos",
-          localField: "residencyinfos",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "residencyinfoDetails",
           pipeline: [
             {
@@ -630,8 +629,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "backgrounds",
-          localField: "backgrounds",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "backgroundDetails",
           pipeline: [
             {
@@ -655,8 +654,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "lifestyles",
-          localField: "lifestyles",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "lifestyleDetails",
           pipeline: [
             {
@@ -679,8 +678,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "astronomics",
-          localField: "astronomics",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "astronomicDetails",
           pipeline: [
             {
@@ -703,8 +702,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "permanentaddresses",
-          localField: "permanentaddress",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "permanentaddressDetails",
           pipeline: [
             {
@@ -727,8 +726,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "familyinfos",
-          localField: "familyinfos",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "familyinfoDetails",
           pipeline: [
             {
@@ -750,8 +749,8 @@ const getAdminProfileData = async (req, res) => {
       {
         $lookup: {
           from: "partnerexpectations",
-          localField: "partnerexpectations",
-          foreignField: "profileid",
+          localField: "_id",
+          foreignField: "ProfileID",
           as: "partnerexpectationDetails",
           pipeline: [
             {

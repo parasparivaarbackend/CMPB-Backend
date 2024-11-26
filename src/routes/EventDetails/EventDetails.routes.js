@@ -16,7 +16,7 @@ import asyncHandler from "../../utils/asyncHandler.js";
 
 const EventRouter = Router();
 
-EventRouter.route("/get-admin").get(
+EventRouter.route("/get-admin/?").get(
   AdminAuthMiddleware,
   asyncHandler(GetEvents)
 );
