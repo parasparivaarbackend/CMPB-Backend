@@ -13,7 +13,7 @@ import { uploadImage } from "../../middleware/multter.middleware.js";
 const BlogRouter = Router();
 
 BlogRouter.route("/get-admin").get(AdminAuthMiddleware, asyncHandler(GetBlog));
-BlogRouter.route("/get").get(UserAuthMiddleware, asyncHandler(GetBlog));
+BlogRouter.route("/get").get(asyncHandler(GetBlog));
 
 BlogRouter.route("/create").post(
   AdminAuthMiddleware,
