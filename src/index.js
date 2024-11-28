@@ -11,7 +11,8 @@ app.use(
   cors({
     origin: [
       `http://localhost:3000`,
-      `https://celebrated-daffodil-6ac963.netlify.app`,
+      // `https://celebrated-daffodil-6ac963.netlify.app`,
+      "https://api.chatmangnipatbyah.org/api/v1",
     ],
     credentials: true,
   })
