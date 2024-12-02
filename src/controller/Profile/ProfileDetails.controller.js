@@ -104,6 +104,7 @@ const getProfileData = async (req, res) => {
                 skinComplexion: 1,
                 BloodGroup: 1,
                 Disablity: 1,
+                DisablityType: 1,
               },
             },
           ],
@@ -445,6 +446,8 @@ const getAdminProfileData = async (req, res) => {
                 State: 1,
                 City: 1,
                 Pincode: 1,
+                ResidencyType: 1,
+                ResidencySince: 1,
               },
             },
           ],
@@ -489,10 +492,8 @@ const getAdminProfileData = async (req, res) => {
           pipeline: [
             {
               $project: {
-                designation: 1,
-                company: 1,
-                start: 1,
-                end: 1,
+                currentJob: 1,
+                previousJobs: 1,
               },
             },
           ],
@@ -642,6 +643,7 @@ const getAdminProfileData = async (req, res) => {
                 SubCast: 1,
                 SelfWorth: 1,
                 FamilyWorth: 1,
+                DependentMember: 1,
               },
             },
           ],
