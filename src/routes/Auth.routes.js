@@ -2,7 +2,7 @@ import { Router } from "express";
 import ProfileRouter from "./Profile/Profile.routes.js";
 import {
   ChangePassword,
-  GoogleLogin,
+  // GoogleLogin,
   loginUser,
   newPassword,
   registeredUser,
@@ -25,6 +25,6 @@ AuthRouter.route("/changepassword").post(
   UserAuthMiddleware,
   asyncHandler(ChangePassword)
 );
-AuthRouter.route("/login/google?").post(GoogleLogin);
+// AuthRouter.route("/login/google?").post(GoogleLogin);
 
 export default AuthRouter;

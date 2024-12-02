@@ -185,58 +185,58 @@ const loginUser = async (req, res) => {
   });
 };
 
-const GoogleLogin = async (req, res) => {
-  try {
-    const { credentials } = req.query;
+// const GoogleLogin = async (req, res) => {
+//   try {
+//     const { credentials } = req.query;
 
-    const googleToken = await oauth2Client.getToken(credentials);
-    oauth2Client.setCredentials(googleToken.tokens);
+//     const googleToken = await oauth2Client.getToken(credentials);
+//     oauth2Client.setCredentials(googleToken.tokens);
 
-    const googleResponse = await axios.get(
-      `https://www.googleapis.com/oauth2/v2/userinfo?alt=json&access_token=${googleToken.tokens.access_token}`
-    );
-    const user = await GoogleModel.findOne({
-      email: googleResponse.data.email,
-    });
+//     const googleResponse = await axios.get(
+//       `https://www.googleapis.com/oauth2/v2/userinfo?alt=json&access_token=${googleToken.tokens.access_token}`
+//     );
+//     const user = await GoogleModel.findOne({
+//       email: googleResponse.data.email,
+//     });
 
-    if (user) {
-      const token = GenerateToken(user._id, user.email);
-      const data = user.toObject();
-      delete data.password;
-      return res.status(200).json({
-        message: "Login successfull",
-        ...data,
-        token,
-      });
-    }
-    const newUser = new GoogleModel({ email: googleResponse.data.email });
+//     if (user) {
+//       const token = GenerateToken(user._id, user.email);
+//       const data = user.toObject();
+//       delete data.password;
+//       return res.status(200).json({
+//         message: "Login successfull",
+//         ...data,
+//         token,
+//       });
+//     }
+//     const newUser = new GoogleModel({ email: googleResponse.data.email });
 
-    const ProfileData = await ProfileModel.create({
-      firstName: googleResponse.data.given_name,
-      lastName: googleResponse.data.family_name,
-      profileImage: googleResponse.data.picture,
-    });
+//     const ProfileData = await ProfileModel.create({
+//       firstName: googleResponse.data.given_name,
+//       lastName: googleResponse.data.family_name,
+//       profileImage: googleResponse.data.picture,
+//     });
 
-    if (!ProfileData)
-      return res.status(500).json({ message: "Failed to Login" });
+//     if (!ProfileData)
+//       return res.status(500).json({ message: "Failed to Login" });
 
-    newUser.ProfileID = ProfileData._id;
-    await newUser.save();
-    const savedUser = newUser.toObject();
-    delete savedUser.password;
-    const token = GenerateToken(savedUser._id, savedUser.email);
+//     newUser.ProfileID = ProfileData._id;
+//     await newUser.save();
+//     const savedUser = newUser.toObject();
+//     delete savedUser.password;
+//     const token = GenerateToken(savedUser._id, savedUser.email);
 
-    if (!savedUser)
-      return res.status(500).json({ message: "Failed to register user" });
+//     if (!savedUser)
+//       return res.status(500).json({ message: "Failed to register user" });
 
-    return res
-      .status(200)
-      .json({ message: "Signup Successfully", ...savedUser, token });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error in Google login" });
-  }
-};
+//     return res
+//       .status(200)
+//       .json({ message: "Signup Successfully", ...savedUser, token });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: "Error in Google login" });
+//   }
+// };
 
 const ChangePassword = async (req, res) => {
   const { oldPassword, password } = req.body;
@@ -311,7 +311,7 @@ const SendOTP = async (req, res) => {
 };
 const SendMobileOTP = async (req, res) => {
   const data = emailSchema.safeParse(req.body.email);
-  const email = data.data;
+  const email = data.data;  
   if (!data.success) return res.status(400).json({ message: "Invaild Email" });
 
   const user = await UserModel.findOne({ email: data.data });
@@ -388,7 +388,7 @@ const newPassword = async (req, res) => {
 export {
   registeredUser,
   loginUser,
-  GoogleLogin,
+  // GoogleLogin,
   SendOTP,
   ChangePassword,
   VerifyCode,
