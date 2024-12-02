@@ -54,7 +54,7 @@ const UpdatePresentAddress = async (req, res) => {
       .status(200)
       .json({ message: "PresentAddress Updated Succesfull", updateData });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

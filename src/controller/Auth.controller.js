@@ -234,7 +234,7 @@ const GoogleLogin = async (req, res) => {
       .status(200)
       .json({ message: "Signup Successfully", ...savedUser, token });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Error in Google login" });
   }
 };
@@ -269,7 +269,7 @@ const ChangePassword = async (req, res) => {
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to change password" });
   }
 };
@@ -352,7 +352,7 @@ const newPassword = async (req, res) => {
     delete EmailToOTP[email];
     return res.status(200).json({ message: "Password Reset Successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(400).json({ message: "Failed to reset password" });
   }
 };

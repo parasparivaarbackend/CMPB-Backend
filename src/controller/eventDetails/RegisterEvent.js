@@ -35,7 +35,7 @@ export const UpdateRegisterPackage = async (req, res) => {
 
     return res.status(200).json({ message: "Package updated successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "failed to update package", error });
   }
 };
@@ -52,7 +52,7 @@ export const GetRegisterPackage = async (_, res) => {
       .status(200)
       .json({ message: "Package updated successfully", data: register[0] });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "failed to get package", error });
   }
 };

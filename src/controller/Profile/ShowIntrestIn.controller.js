@@ -30,7 +30,7 @@ const CreateShowIntrestIn = async (req, res) => {
 
     return res.status(200).json({ message: "Intrest Added" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -59,7 +59,7 @@ const getAdminIntrestedIn = async (req, res) => {
 
     return res.status(200).json({ message: "All intrested user", users });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

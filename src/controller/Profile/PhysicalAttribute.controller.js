@@ -47,7 +47,6 @@ const UpdatePhysicalAttribute = async (req, res) => {
   if (validateData.success === false) {
     return res.status(400).json({ ...validateData.error.issues });
   }
-  console.log(validateData.data);
 
   try {
     const data = await PhysicalAttributeModel.findOneAndUpdate(
@@ -61,7 +60,7 @@ const UpdatePhysicalAttribute = async (req, res) => {
       data,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

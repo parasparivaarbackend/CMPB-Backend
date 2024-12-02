@@ -20,7 +20,7 @@ const GetBlog = async (req, res) => {
     }
     return res.status(200).json({ message: "Blog Fetch succesfull", data });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -46,7 +46,7 @@ const CreateBlog = async (req, res) => {
     });
     return res.status(200).json({ message: "blog created succesfull", data });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -61,7 +61,7 @@ const DeleteBlog = async (req, res) => {
     await blogs.findByIdAndDelete(id);
     return res.status(200).json({ message: "Blog Deleted Succesfull" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

@@ -23,7 +23,7 @@ export async function UploadBucketHandler(file, dest) {
     return { URL, uploadID: data[1].name };
   } catch (error) {
     fs.unlinkSync(file.path);
-    console.log(error);
+    console.error(error);
   }
 }
 export async function DeleteBucketFile(id) {
@@ -39,7 +39,7 @@ export async function DeleteBucketFile(id) {
     await file.delete();
     return `Deleted Successfully`;
   } catch (error) {
-    console.log("Failed to Delete File from Bucket ", error);
+    console.error("Failed to Delete File from Bucket ", error);
     throw new Error(`Failed to Delete File from Bucket `);
   }
 }
@@ -58,6 +58,6 @@ export async function ListFilesHandler() {
 
     return fileList;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }

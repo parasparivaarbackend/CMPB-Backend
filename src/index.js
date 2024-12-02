@@ -23,4 +23,4 @@ dbConnect()
       console.log("server is running on PORT ", PORT);
     })
   )
-  .catch((err) => console.log("error", err));
+  .catch((err) => console.error("error", err));

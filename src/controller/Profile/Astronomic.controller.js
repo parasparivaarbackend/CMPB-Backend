@@ -53,7 +53,7 @@ const UpdateAstronomic = async (req, res) => {
       .status(200)
       .json({ message: "Astronomic Details Created Succesfull", data });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

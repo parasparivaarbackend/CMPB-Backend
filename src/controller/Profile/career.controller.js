@@ -56,7 +56,7 @@ const UpdateCarrer = async (req, res) => {
       .status(200)
       .json({ message: "Carrer Detail Updated Succesfull", updateData });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

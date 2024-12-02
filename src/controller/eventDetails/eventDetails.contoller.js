@@ -207,7 +207,7 @@ const createEventPayment = async (req, res) => {
 
     return res.status(200).json({ message: "payment successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     return res.status(500).json({ message: "Failed to update payment" });
   }
@@ -268,7 +268,7 @@ const UserWhoBookedEvent = async (req, res) => {
     ]);
     return res.status(200).json({ message: "Events get Succesfull", data });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Failed to get All users who book event" });
@@ -304,7 +304,7 @@ const GetPurchasedUserEvent = async (req, res) => {
 
     return res.status(200).json({ userEvents });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to get User Events" });
   }
 };

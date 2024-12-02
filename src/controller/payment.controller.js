@@ -50,7 +50,7 @@ export const payment = async (req, res) => {
 
     return res.status(200).json({ order });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to make payment" });
   }
 };

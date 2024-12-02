@@ -62,7 +62,7 @@ export { UserAuthMiddleware, AdminAuthMiddleware };
 
 export class Auth {
   static async UserAuth(req, res, next) {
-    console.log("inside user auth");
+    // console.log("inside user auth");
 
     const token =
       req.cookies?.token ||
@@ -91,7 +91,6 @@ export class Auth {
 
       // Store user info in request for later use
       req.user = user;
-      console.log("before user next");
 
       next(); // Proceed to the next middleware or route handler
     } catch (error) {
@@ -128,7 +127,7 @@ export class Auth {
 
       // Store admin info in request for later use
       req.admin = admin;
-      console.log("before admin next");
+      // console.log("before admin next");
       next(); // Proceed to the next middleware or route handler
     } catch (error) {
       return res.status(401).json({ message: "Invalid token" });
