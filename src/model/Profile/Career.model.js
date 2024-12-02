@@ -31,22 +31,18 @@ const CareerSchema = new mongoose.Schema({
   previousJobs: {
     designation: {
       type: String,
-      required: true,
       trim: true,
     },
     company: {
       type: String,
-      required: true,
       trim: true,
     },
     start: {
       type: String,
-      required: true,
       trim: true,
     },
     end: {
       type: String,
-      required: true,
       trim: true,
     },
   },

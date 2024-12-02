@@ -19,7 +19,7 @@ const eventsSchema = z.object({
     { message: "Date must not be in the past" }
   ),
   state: z.string().min(2),
-  amount: z.number().min(2),
+  amount: z.number().gte(1000),
   eventName: z.string().min(2),
   venues: z.string().min(2),
   description: z.string().min(2).optional(),

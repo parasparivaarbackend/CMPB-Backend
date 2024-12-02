@@ -609,7 +609,7 @@ const listFiles = async (_, res) => {
 const packagePaymentInUserModelValidation = z.object({
   PaymentID: z.string().min(5, "Wrong Payment ID"),
   OrderID: z.string().min(5, "Wrong Order ID"),
-  amount: z.number().min(100),
+  amount: z.number().gte(10000),
 });
 
 const UserPackageData = async (req, res) => {

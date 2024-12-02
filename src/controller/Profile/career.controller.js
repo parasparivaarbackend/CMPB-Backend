@@ -2,10 +2,18 @@ import { z } from "zod";
 import { careermodel } from "../../model/Profile/Career.model.js";
 
 const validateCarrer = z.object({
-  designation: z.string().min(2),
-  company: z.string().min(2),
-  start: z.string().min(2),
-  end: z.string().min(2),
+  currentJob: z.object({
+    designation: z.string().trim().min(2),
+    company: z.string().trim().min(2),
+    start: z.string().trim().min(2),
+    end: z.string().trim().min(2),
+  }),
+  previousJobs: z.object({
+    designation: z.string(),
+    company: z.string(),
+    start: z.string(),
+    end: z.string(),
+  }),
 });
 
 const CreateCareer = async (req, res) => {
