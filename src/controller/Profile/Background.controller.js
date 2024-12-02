@@ -10,8 +10,8 @@ const BackgroundValidate = z.object({
   DependentMember: z.number().min(0),
   MotherName: z.string().min(2),
   FatherName: z.string().min(2),
-  isMotherAlive: z.boolean(),
-  isFatherAlive: z.boolean(),
+  isMotherAlive: z.enum(["true", "false"]),
+  isFatherAlive: z.enum(["true", "false"]),
 });
 
 const CreateBackground = async (req, res) => {

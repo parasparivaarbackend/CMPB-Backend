@@ -47,12 +47,12 @@ const BackgroundSchema = new mongoose.Schema(
       trim: true,
     },
     isMotherAlive: {
-      type: Boolean,
+      type: String,
       required: true,
       trim: true,
     },
     isFatherAlive: {
-      type: Boolean,
+      type: String,
       required: true,
       trim: true,
     },
