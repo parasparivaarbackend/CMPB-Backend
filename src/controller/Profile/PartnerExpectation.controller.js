@@ -7,7 +7,7 @@ const PartnerExpectationSchema = z.object({
   Height: z.number().min(2),
   weight: z.number().min(2),
   MaritalStatus: z.string().min(2),
-  Children: z.enum(["true", "false"]),
+  Children: z.number().gte(0),
   Religion: z.string().min(2),
   Caste: z.string().min(2),
   SubCaste: z.string().min(2),

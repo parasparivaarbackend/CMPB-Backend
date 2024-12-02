@@ -8,6 +8,10 @@ const BackgroundValidate = z.object({
   SelfWorth: z.number().gte(20000),
   FamilyWorth: z.number().gte(20000),
   DependentMember: z.number().min(0),
+  MotherName: z.string().min(2),
+  FatherName: z.string().min(2),
+  isMotherAlive: z.boolean(),
+  isFatherAlive: z.boolean(),
 });
 
 const CreateBackground = async (req, res) => {
