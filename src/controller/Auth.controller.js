@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import { StatusCodes } from "http-status-codes";
 import { UserModel } from "../model/user.model.js";
 import { ProfileModel } from "../model/Profile/profile.model.js";
-import { oauth2Client } from "../utils/GoogleConfig.js";
 import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
 import { isUserAbove18 } from "../utils/isUserAbove18.js";
@@ -310,6 +309,33 @@ const SendOTP = async (req, res) => {
     message: "OTP Sent",
   });
 };
+const SendMobileOTP = async (req, res) => {
+  const data = emailSchema.safeParse(req.body.email);
+  const email = data.data;
+  if (!data.success) return res.status(400).json({ message: "Invaild Email" });
+
+  const user = await UserModel.findOne({ email: data.data });
+
+  if (!user) return res.status(400).json({ message: "User do not exist" });
+
+  const { OTP, min, expire } = generateOTP();
+  EmailToOTP[email] = { OTP, expire };
+
+  const item = { email, Sub: "Reset password", text: OTP };
+  const template = {
+    url: "SendEmailOTP.ejs",
+    title: `Password Reset Request`,
+    userName: `${user.firstName} ${user.lastName}`,
+    OTP,
+    min,
+  };
+
+  await SendMailTemplate(item, template);
+
+  return res.status(200).json({
+    message: "OTP Sent",
+  });
+};
 
 const VerifyCode = async (req, res) => {
   const { code } = req.params;
@@ -356,6 +382,8 @@ const newPassword = async (req, res) => {
     return res.status(400).json({ message: "Failed to reset password" });
   }
 };
+
+
 
 export {
   registeredUser,
