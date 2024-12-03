@@ -5,9 +5,7 @@ import mongoose from "mongoose";
 import { StatusCodes } from "http-status-codes";
 import { UserModel } from "../model/user.model.js";
 import { ProfileModel } from "../model/Profile/profile.model.js";
-import { GoogleModel } from "../model/GoogleLogin.model.js";
 import { SendMailTemplate } from "../utils/EmailHandler.js";
-import { isUserAbove18 } from "../utils/isUserAbove18.js";
 
 const GenerateToken = (_id, email) => {
   return jwt.sign({ _id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -16,7 +14,6 @@ function generateMemberID() {
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
   let randomID = "";
-
   for (let i = 0; i < 3; i++) {
     const randomCharIndex = Math.floor(Math.random() * characters.length);
     const randomNumIndex = Math.floor(Math.random() * numbers.length);
@@ -27,24 +24,17 @@ function generateMemberID() {
 }
 
 const emailSchema = z.string().email("Invalid email");
+const phoneSchema = z
+  .string()
+  .length(10, "Phone number must be exactly 10 digits")
+  .regex(/^\d{10}$/, "Phone number must contain only digits");
 
 const UserSchemaValidation = z.object({
   email: emailSchema,
   firstName: z.string().min(2).max(50),
   lastName: z.string().min(2).max(50),
-  phone: z.string().min(10).max(12).optional(),
-  DOB: z.string().refine(
-    (val) => {
-      const birthDate = new Date(val); // Convert string to Date
-      return !isNaN(birthDate.getTime()) && isUserAbove18(val);
-    },
-    {
-      message:
-        "User must be 18 years or older, and the birthdate must be valid.",
-    }
-  ),
+  phone: phoneSchema,
   password: z.string().min(6).max(16),
-  gender: z.enum(["male", "female"]),
 });
 
 const registeredUser = async (req, res) => {
@@ -139,9 +129,21 @@ const registeredUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const data = req.body;
+  let Authenticator;
+  const email = emailSchema.safeParse(data.identifier);
+  const phone = phoneSchema.safeParse(data.identifier);
+  Authenticator = email.success ? "email" : "phone";
 
-  const existUser = await UserModel.findOne({ email });
+  console.log(Authenticator);
+
+  let existUser;
+  if (Authenticator === "email") {
+    existUser = await UserModel.findOne({ email: email.data });
+  }
+  if (Authenticator === "phone") {
+    existUser = await UserModel.findOne({ phone: phone.data });
+  }
   if (!existUser) {
     return res.status(400).json({ message: "User Not Found" });
   }
@@ -151,10 +153,10 @@ const loginUser = async (req, res) => {
       .json({ message: "Please verify your account first" });
   }
 
-  const checkPassword = await existUser.comparePassword(password);
-  if (!checkPassword) {
-    return res.status(400).json({ message: "Password does not match" });
-  }
+  const checkPassword = await existUser.comparePassword(data?.password ?? "");
+
+  if (!checkPassword)
+    return res.status(400).json({ message: "Wrong Credentails" });
 
   if (!existUser.active) {
     return res
@@ -311,7 +313,7 @@ const SendOTP = async (req, res) => {
 };
 const SendMobileOTP = async (req, res) => {
   const data = emailSchema.safeParse(req.body.email);
-  const email = data.data;  
+  const email = data.data;
   if (!data.success) return res.status(400).json({ message: "Invaild Email" });
 
   const user = await UserModel.findOne({ email: data.data });
@@ -383,12 +385,9 @@ const newPassword = async (req, res) => {
   }
 };
 
-
-
 export {
   registeredUser,
   loginUser,
-  // GoogleLogin,
   SendOTP,
   ChangePassword,
   VerifyCode,
