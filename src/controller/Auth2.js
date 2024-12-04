@@ -307,6 +307,60 @@ const VerifyCode = async (req, res) => {
     console.error(error);
   }
 };
+const VerifyCodeAndLogin = async (req, res) => {
+  const { code } = req.params;
+  let Authenticator = getAuthenticator(req.body);
+  if (Authenticator === null)
+    return res.status(400).json({ message: "Invaild Credentails" });
+
+  const identifier = req.body.identifier;
+
+  try {
+    const existUser = await UserModel.findOne({
+      $or: [{ email: identifier }, { phone: identifier }],
+    });
+
+    if (!existUser)
+      return res.status(400).json({ message: "User do not exist" });
+
+    if (
+      EmailToOTP[identifier].OTP != code ||
+      EmailToOTP[identifier].expire < Date.now()
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Incorrect Verification code or code is expire" });
+    }
+
+    if (Authenticator === "email") {
+      existUser.isEmailVerified = true;
+    }
+    if (Authenticator === "phone") {
+      existUser.isPhoneVerified = true;
+    }
+    await existUser.save();
+    const token = GenerateToken(existUser._id, identifier);
+    const user = existUser.toObject();
+    delete user.password;
+
+    res
+      .cookie("token", token, {
+        httpOnly: false,
+        secure: false,
+        path: "/",
+      })
+      .cookie("role", user.role, {
+        httpOnly: false,
+        secure: false,
+        path: "/",
+      });
+    return res
+      .status(200)
+      .json({ message: "User verified successfully", ...user, token });
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const newPassword = async (req, res) => {
   let Authenticator = getAuthenticator(req.body);
@@ -382,4 +436,5 @@ export {
   ChangePassword,
   VerifyCode,
   newPassword,
+  VerifyCodeAndLogin,
 };

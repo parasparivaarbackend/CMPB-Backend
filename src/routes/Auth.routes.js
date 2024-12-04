@@ -1,14 +1,13 @@
 import { Router } from "express";
 import ProfileRouter from "./Profile/Profile.routes.js";
-import {
-  // ChangePassword,
-  // GoogleLogin,
-  // loginUser,
-  // newPassword,
-  // registeredUser,
-  // SendOTP,
-  // VerifyCode,
-} from "../controller/Auth.controller.js";
+import {} from // ChangePassword,
+// GoogleLogin,
+// loginUser,
+// newPassword,
+// registeredUser,
+// SendOTP,
+// VerifyCode,
+"../controller/Auth.controller.js";
 import {
   registeredUser,
   loginUser,
@@ -16,6 +15,7 @@ import {
   newPassword,
   ChangePassword,
   VerifyCode,
+  VerifyCodeAndLogin,
 } from "../controller/Auth2.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { UserAuthMiddleware } from "../middleware/Auth.middleware.js";
@@ -28,6 +28,9 @@ AuthRouter.route("/signup").post(asyncHandler(registeredUser));
 AuthRouter.route("/login").post(asyncHandler(loginUser));
 AuthRouter.route("/sendotp").post(asyncHandler(SendOTP));
 AuthRouter.route("/verify/:code").post(asyncHandler(VerifyCode));
+AuthRouter.route("/verifyAndLogin/:code").post(
+  asyncHandler(VerifyCodeAndLogin)
+);
 AuthRouter.route("/newpassword").post(asyncHandler(newPassword));
 AuthRouter.route("/changepassword").post(
   UserAuthMiddleware,
