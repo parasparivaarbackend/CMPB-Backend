@@ -1,14 +1,22 @@
 import { Router } from "express";
 import ProfileRouter from "./Profile/Profile.routes.js";
 import {
-  ChangePassword,
+  // ChangePassword,
   // GoogleLogin,
-  loginUser,
-  newPassword,
-  registeredUser,
-  SendOTP,
-  VerifyCode,
+  // loginUser,
+  // newPassword,
+  // registeredUser,
+  // SendOTP,
+  // VerifyCode,
 } from "../controller/Auth.controller.js";
+import {
+  registeredUser,
+  loginUser,
+  SendOTP,
+  newPassword,
+  ChangePassword,
+  VerifyCode,
+} from "../controller/Auth2.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { UserAuthMiddleware } from "../middleware/Auth.middleware.js";
 

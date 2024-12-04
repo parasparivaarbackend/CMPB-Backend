@@ -61,7 +61,6 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, "email is required"],
       unique: true,
       trim: true,
       index: true,
@@ -76,7 +75,6 @@ const UserSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
       trim: true,
       unique: true,
       index: true,
@@ -93,11 +91,11 @@ const UserSchema = new mongoose.Schema(
       enum: ["admin", "user"],
       default: "user",
     },
-    active: {
-      type: Boolean,
-      require: true,
-      default: false,
-    },
+    // active: {
+    //   type: Boolean,
+    //   require: true,
+    //   default: false,
+    // },
     RegisterPackage: {
       type: RegisterPackage,
     },

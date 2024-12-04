@@ -20,13 +20,12 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
     if (user.role !== "user")
       return res.status(400).json({ message: "Unauthorize user" });
 
-    if (user && !user.active)
+    if (user && !user.isEmailVerified && !user.isPhoneVerified)
       return res
         .status(400)
         .json({ message: "Please verify your account first" });
 
     req.user = user;
-
     next();
   } catch (error) {
     return res.status(500).json({ message: "Invalid Token or Token exipre" });
@@ -49,11 +48,10 @@ const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
   if (admin.role !== "admin")
     return res.status(400).json({ message: "Unauthorize user" });
 
-  if (admin && !admin.active) {
+  if (user && !user.isEmailVerified && !user.isPhoneVerified)
     return res
       .status(400)
       .json({ message: "Please verify your account first" });
-  }
 
   req.user = admin;
   next();
