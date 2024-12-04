@@ -187,7 +187,7 @@ const loginUser = async (req, res) => {
     (Authenticator === "phone" && !existUser.isPhoneVerified)
   ) {
     return res
-      .status(200)
+      .status(302)
       .json({ message: "Please verify your account first" });
   }
 
