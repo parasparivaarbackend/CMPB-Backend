@@ -48,7 +48,7 @@ const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
   if (admin.role !== "admin")
     return res.status(400).json({ message: "Unauthorize user" });
 
-  if (user && !user.isEmailVerified && !user.isPhoneVerified)
+  if (admin && !admin.isEmailVerified && !admin.isPhoneVerified)
     return res
       .status(400)
       .json({ message: "Please verify your account first" });
