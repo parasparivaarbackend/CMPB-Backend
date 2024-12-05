@@ -63,7 +63,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       unique: true,
       trim: true,
-      index: true,
+      index: { unique: true, sparse: true },
     },
     isEmailVerified: {
       type: Boolean,
@@ -77,7 +77,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
       unique: true,
-      index: true,
+      index: { unique: true, sparse: true },
     },
     password: {
       type: String,

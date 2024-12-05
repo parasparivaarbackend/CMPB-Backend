@@ -38,6 +38,49 @@ const UserSchemaValidation = z.object({
 
 let EmailToOTP = {};
 
+const CheckUser = async (req, res) => {
+  let Authenticator = getAuthenticator(req.body);
+  if (Authenticator === null)
+    return res.status(400).json({ message: "Invaild Credentails" });
+  try {
+    const existUser = await UserModel.findOne({
+      $or: [{ email: identifier }, { phone: identifier }],
+    });
+    if (existUser) {
+      const { OTP, min, expire } = generateOTP();
+
+      if (Authenticator === "email") {
+        EmailToOTP[identifier] = { OTP, expire };
+        const item = {
+          email: identifier,
+          Sub: "Verify Account",
+          text: OTP,
+        };
+        const template = {
+          url: "SendEmailOTP.ejs",
+          title: `Verify Your Account`,
+          userName: `${user.firstName} ${user.lastName}`,
+          OTP,
+          min,
+        };
+
+        await SendMailTemplate(item, template);
+      }
+      if (Authenticator === "phone") {
+        EmailToOTP[identifier] = { OTP, expire };
+        await SendMobileOTP(identifier, OTP);
+      }
+      return res.status(200).json({ success: true, message: "user Found" });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "user Not Found" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const registeredUser = async (req, res) => {
   let Authenticator = getAuthenticator(req.body);
   const validateData = UserSchemaValidation.safeParse(req.body);
@@ -50,49 +93,8 @@ const registeredUser = async (req, res) => {
   if (!validateData.success)
     return res.status(400).json({ errors: validateData.error.issues });
 
-  let existUser;
-
-  existUser = await UserModel.findOne({
-    $or: [{ email: identifier }, { phone: identifier }],
-  });
-
-  if (existUser && Authenticator !== null) {
-    const checkPassword = await existUser.comparePassword(
-      validateData?.data?.password ?? ""
-    );
-
-    if (!checkPassword)
-      return res.status(400).json({ message: "Wrong Credentails" });
-
-    if (!existUser.isEmailVerified && !existUser.isPhoneVerified) {
-      return res
-        .status(400)
-        .json({ message: "Please verify your account first" });
-    }
-    const token = GenerateToken(existUser._id, identifier);
-    const user = existUser.toObject();
-    delete user.password;
-
-    res
-      .cookie("token", token, {
-        httpOnly: false,
-        secure: false,
-        path: "/",
-      })
-      .cookie("role", user.role, {
-        httpOnly: false,
-        secure: false,
-        path: "/",
-      });
-
-    return res.status(200).json({
-      message: "Login Succesfull",
-      ...user,
-      token,
-    });
-  }
-
   let MemberID;
+  let existUser;
   const session = await mongoose.startSession();
 
   try {
@@ -100,11 +102,21 @@ const registeredUser = async (req, res) => {
     do {
       MemberID = generateMemberID();
       existUser = await UserModel.findOne({
-        MemberID,
+        $or: [
+          { MemberID },
+          { email: validateData.data.email },
+          { phone: validateData.data.phone },
+        ],
       }).session(session);
 
       if (!existUser) break;
     } while (existUser && existUser.MemberID === MemberID);
+
+    if (existUser) {
+      return res.status(400).json({
+        message: `${Authenticator === "email" ? "Email" : "Phone"} alreay exist`,
+      });
+    }
 
     const user = new UserModel(validateData.data);
     const profileData = new ProfileModel({ UserID: user._id });
@@ -120,10 +132,7 @@ const registeredUser = async (req, res) => {
     };
 
     await profileData.save({ session });
-    const savedUser = await user.save({ session });
-
-    const data = savedUser.toObject();
-    delete data.password;
+    await user.save({ session });
 
     const { OTP, min, expire } = generateOTP();
 
@@ -153,7 +162,6 @@ const registeredUser = async (req, res) => {
 
     return res.status(200).json({
       message: "User registered successfully",
-      ...data,
     });
   } catch (error) {
     await session.abortTransaction();
@@ -437,4 +445,5 @@ export {
   VerifyCode,
   newPassword,
   VerifyCodeAndLogin,
+  CheckUser,
 };
