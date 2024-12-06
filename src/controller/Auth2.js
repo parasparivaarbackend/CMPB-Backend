@@ -46,10 +46,10 @@ const CheckUser = async (req, res) => {
   const identifier = req.body.identifier;
 
   try {
-    const existUser = await UserModel.findOne({
+    const user = await UserModel.findOne({
       $or: [{ email: identifier }, { phone: identifier }],
     });
-    if (existUser) {
+    if (user) {
       const { OTP, min, expire } = generateOTP();
 
       if (Authenticator === "email") {
