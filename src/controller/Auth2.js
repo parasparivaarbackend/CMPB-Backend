@@ -51,6 +51,7 @@ const CheckUser = async (req, res) => {
     });
     if (user) {
       const { OTP, min, expire } = generateOTP();
+      console.log("Authenticator is",Authenticator)
 
       if (Authenticator === "email") {
         EmailToOTP[identifier] = { OTP, expire };
@@ -71,7 +72,8 @@ const CheckUser = async (req, res) => {
       }
       if (Authenticator === "phone") {
         EmailToOTP[identifier] = { OTP, expire };
-        await SendMobileOTP(identifier, OTP);
+        const abc = await SendMobileOTP(identifier, OTP);
+        console.log("abc",abc)
       }
       return res.status(200).json({ success: true, message: "user Found" });
     } else {
