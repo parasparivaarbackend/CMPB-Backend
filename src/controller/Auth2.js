@@ -76,7 +76,7 @@ const CheckUser = async (req, res) => {
       return res.status(200).json({ success: true, message: "user Found" });
     } else {
       return res
-        .status(400)
+        .status(200)
         .json({ success: false, message: "user Not Found" });
     }
   } catch (error) {
