@@ -115,6 +115,7 @@ const registeredUser = async (req, res) => {
       existUser = await UserModel.findOne({
         $or: [
           { MemberID },
+          identifier
         
         ],
       }).session(session);
