@@ -93,7 +93,13 @@ const registeredUser = async (req, res) => {
   if (Authenticator === null)
     return res.status(400).json({ message: "Invaild Credentails" });
 
-  const identifier = req.body.identifier;
+  let identifier
+  if (Authenticator === "email"){
+    identifier = {email:req?.body?.identifier};
+  }else{
+    identifier = {phone:req?.body?.identifier};
+  }
+
 
   if (!validateData.success)
     return res.status(400).json({ errors: validateData.error.issues });
@@ -109,8 +115,7 @@ const registeredUser = async (req, res) => {
       existUser = await UserModel.findOne({
         $or: [
           { MemberID },
-          { email: identifier ?? ""  },
-          { phone: identifier  ?? "" },
+        
         ],
       }).session(session);
 
