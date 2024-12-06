@@ -87,99 +87,86 @@ const CheckUser = async (req, res) => {
 };
 
 const registeredUser = async (req, res) => {
-  let Authenticator = getAuthenticator(req.body);
-  const validateData = UserSchemaValidation.safeParse(req.body);
+  const Authenticator = getAuthenticator(req.body);
+  const { success, data, error } = UserSchemaValidation.safeParse(req.body);
 
-  if (Authenticator === null)
-    return res.status(400).json({ message: "Invaild Credentails" });
-
-  let search
-  const identifier = req?.body?.identifier
-  if (Authenticator === "email") {
-    search = { email: req?.body?.identifier };
-  } else {
-    search = { phone: req?.body?.identifier };
+  if (!Authenticator) {
+    return res.status(400).json({ message: "Invalid Credentials" });
   }
-  console.log("search", search);
 
+  if (!success) {
+    return res.status(400).json({ errors: error.issues });
+  }
 
-  if (!validateData.success)
-    return res.status(400).json({ errors: validateData.error.issues });
+  const identifier = req.body.identifier;
+  const searchField = Authenticator === "email" ? "email" : "phone";
+  const searchQuery = { [searchField]: identifier || null };
 
-  let MemberID;
-  let existUser;
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
+
+    // Generate a unique MemberID and check for conflicts
+    let MemberID;
+    let existUser;
     do {
       MemberID = generateMemberID();
       existUser = await UserModel.findOne({
-        $or: [
-          { MemberID },
-          search
-
-        ],
+        $or: [{ MemberID }, searchQuery],
       }).session(session);
-
-      if (!existUser) break;
     } while (existUser && existUser.MemberID === MemberID);
 
     if (existUser) {
       return res.status(400).json({
-        message: `${Authenticator === "email" ? "Email" : "Phone"} alreay exist`,
+        message: `${searchField === "email" ? "Email" : "Phone"} already exists`,
       });
     }
-    console.log("existUser", existUser);
 
+    // Prepare user and profile models
+    const user = new UserModel({
+      ...data,
+      [searchField]: identifier,
+      [searchField === "email" ? "phone" : "email"]: null, // Set the opposite field to null
+      ProfileID: undefined,
+      MemberID,
+      RegisterPackage: { PremiumMember: false },
+    });
 
-    const user = new UserModel(validateData.data);
     const profileData = new ProfileModel({ UserID: user._id });
 
-    // Set references and save profile and user
     user.ProfileID = profileData._id;
-    user.MemberID = MemberID;
-    if (Authenticator === "email") user.email = identifier;
-    if (Authenticator === "phone") user.phone = identifier;
-    console.log("here ");
 
-
-    user.RegisterPackage = {
-      PremiumMember: false,
-    };
-
+    // Save profile and user within the transaction
     await profileData.save({ session });
     await user.save({ session });
 
+    // Generate and send OTP
     const { OTP, min, expire } = generateOTP();
+    EmailToOTP[identifier] = { OTP, expire };
 
-    if (Authenticator === "email") {
-      EmailToOTP[identifier] = { OTP, expire };
-      const item = {
-        email: identifier,
-        Sub: "Verify Account",
-        text: OTP,
-      };
-      const template = {
-        url: "SendEmailOTP.ejs",
-        title: `Verify Your Account`,
-        userName: `${user.firstName} ${user.lastName}`,
-        OTP,
-        min,
-      };
-
-      await SendMailTemplate(item, template);
-    }
-    if (Authenticator === "phone") {
-      EmailToOTP[identifier] = { OTP, expire };
+    if (searchField === "email") {
+      await SendMailTemplate(
+        {
+          email: identifier,
+          Sub: "Verify Account",
+          text: OTP,
+        },
+        {
+          url: "SendEmailOTP.ejs",
+          title: "Verify Your Account",
+          userName: `${user.firstName} ${user.lastName}`,
+          OTP,
+          min,
+        }
+      );
+    } else if (searchField === "phone") {
       await SendMobileOTP(identifier, OTP);
     }
 
     await session.commitTransaction();
 
-    return res.status(200).json({
-      message: "User registered successfully",
-    });
+    return res.status(200).json({ message: "User registered successfully" });
   } catch (error) {
     await session.abortTransaction();
     console.error("Transaction aborted due to an error:", error);
