@@ -42,6 +42,9 @@ const CheckUser = async (req, res) => {
   let Authenticator = getAuthenticator(req.body);
   if (Authenticator === null)
     return res.status(400).json({ message: "Invaild Credentails" });
+
+  const identifier = req.body.identifier;
+
   try {
     const existUser = await UserModel.findOne({
       $or: [{ email: identifier }, { phone: identifier }],
