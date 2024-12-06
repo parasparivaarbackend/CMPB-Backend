@@ -109,8 +109,8 @@ const registeredUser = async (req, res) => {
       existUser = await UserModel.findOne({
         $or: [
           { MemberID },
-          { email: validateData.data.email },
-          { phone: validateData.data.phone },
+          { email: identifier  },
+          { phone: identifier  },
         ],
       }).session(session);
 
