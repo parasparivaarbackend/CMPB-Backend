@@ -51,7 +51,7 @@ const CheckUser = async (req, res) => {
     });
     if (user) {
       const { OTP, min, expire } = generateOTP();
-      console.log("Authenticator is",Authenticator)
+      console.log("Authenticator is", Authenticator)
 
       if (Authenticator === "email") {
         EmailToOTP[identifier] = { OTP, expire };
@@ -73,7 +73,7 @@ const CheckUser = async (req, res) => {
       if (Authenticator === "phone") {
         EmailToOTP[identifier] = { OTP, expire };
         const abc = await SendMobileOTP(identifier, OTP);
-        console.log("abc",abc)
+        console.log("abc", abc)
       }
       return res.status(200).json({ success: true, message: "user Found" });
     } else {
@@ -93,12 +93,14 @@ const registeredUser = async (req, res) => {
   if (Authenticator === null)
     return res.status(400).json({ message: "Invaild Credentails" });
 
-  let identifier
-  if (Authenticator === "email"){
-    identifier = {email:req?.body?.identifier};
-  }else{
-    identifier = {phone:req?.body?.identifier};
+  let search
+  const identifier = req?.body?.identifier
+  if (Authenticator === "email") {
+    search = { email: req?.body?.identifier };
+  } else {
+    search = { phone: req?.body?.identifier };
   }
+  console.log("search", search);
 
 
   if (!validateData.success)
@@ -115,8 +117,8 @@ const registeredUser = async (req, res) => {
       existUser = await UserModel.findOne({
         $or: [
           { MemberID },
-          identifier
-        
+          search
+
         ],
       }).session(session);
 
@@ -128,6 +130,8 @@ const registeredUser = async (req, res) => {
         message: `${Authenticator === "email" ? "Email" : "Phone"} alreay exist`,
       });
     }
+    console.log("existUser", existUser);
+
 
     const user = new UserModel(validateData.data);
     const profileData = new ProfileModel({ UserID: user._id });
@@ -137,6 +141,8 @@ const registeredUser = async (req, res) => {
     user.MemberID = MemberID;
     if (Authenticator === "email") user.email = identifier;
     if (Authenticator === "phone") user.phone = identifier;
+    console.log("here ");
+
 
     user.RegisterPackage = {
       PremiumMember: false,
