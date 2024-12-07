@@ -1,6 +1,8 @@
 import Razorpay from "razorpay";
 import { UserModel } from "../model/user.model.js";
 import { eventdetails } from "../model/Events/eventdetails.model.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.PAYMENT_KEY_ID,

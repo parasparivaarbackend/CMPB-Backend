@@ -91,11 +91,6 @@ const UserSchema = new mongoose.Schema(
       enum: ["admin", "user"],
       default: "user",
     },
-    // active: {
-    //   type: Boolean,
-    //   require: true,
-    //   default: false,
-    // },
     RegisterPackage: {
       type: RegisterPackage,
     },
