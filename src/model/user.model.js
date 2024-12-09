@@ -61,8 +61,9 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
       trim: true,
+      sparse: true,
+      require: true,
       index: { unique: true, sparse: true },
     },
     isEmailVerified: {
@@ -76,7 +77,8 @@ const UserSchema = new mongoose.Schema(
     phone: {
       type: String,
       trim: true,
-      unique: true,
+      sparse: true,
+      require: true,
       index: { unique: true, sparse: true },
     },
     password: {
