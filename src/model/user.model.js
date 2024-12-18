@@ -61,15 +61,25 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, "email is required"],
-      unique: true,
       trim: true,
-      index: true,
+      sparse: true,
+      require: true,
+      index: { unique: true, sparse: true },
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
     },
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
       trim: true,
+      sparse: true,
+      require: true,
+      index: { unique: true, sparse: true },
     },
     password: {
       type: String,
@@ -82,11 +92,6 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       enum: ["admin", "user"],
       default: "user",
-    },
-    active: {
-      type: Boolean,
-      require: true,
-      default: false,
     },
     RegisterPackage: {
       type: RegisterPackage,

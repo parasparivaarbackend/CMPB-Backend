@@ -19,7 +19,7 @@ const eventsSchema = z.object({
     { message: "Date must not be in the past" }
   ),
   state: z.string().min(2),
-  amount: z.number().min(2),
+  amount: z.number().gte(1000),
   eventName: z.string().min(2),
   venues: z.string().min(2),
   description: z.string().min(2).optional(),
@@ -207,7 +207,7 @@ const createEventPayment = async (req, res) => {
 
     return res.status(200).json({ message: "payment successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     return res.status(500).json({ message: "Failed to update payment" });
   }
@@ -268,7 +268,7 @@ const UserWhoBookedEvent = async (req, res) => {
     ]);
     return res.status(200).json({ message: "Events get Succesfull", data });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Failed to get All users who book event" });
@@ -304,7 +304,7 @@ const GetPurchasedUserEvent = async (req, res) => {
 
     return res.status(200).json({ userEvents });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to get User Events" });
   }
 };

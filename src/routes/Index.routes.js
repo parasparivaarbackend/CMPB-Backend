@@ -10,6 +10,7 @@ import { ChurayeHuaPalRouter } from "./ChurayeHuaPal/ChurayeHuaPal.routes.js";
 import PaymentRouter from "./payment.routes.js";
 import RegisterPackage from "./Register/Register.routes.js";
 import DashboardRouter from "./Dashboard.routes.js";
+import { BlogRouter } from "./Blog/blog.routes.js";
 
 const IndexRoute = Router();
 
@@ -27,5 +28,6 @@ IndexRoute.use("/churaye-hua-pal", ChurayeHuaPalRouter);
 IndexRoute.use("/payment", PaymentRouter);
 IndexRoute.use("/RegisterPackage", RegisterPackage);
 IndexRoute.use("/dashboard", DashboardRouter);
+IndexRoute.use("/blog", BlogRouter);
 
 export default IndexRoute;

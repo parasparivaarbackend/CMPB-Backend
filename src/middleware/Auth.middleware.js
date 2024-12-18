@@ -4,7 +4,7 @@ import { UserModel } from "../model/user.model.js";
 
 const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
   const token =
-    req.cookies?.token || req.headers?.authorization.replace("Bearer ", "");
+    req.cookies?.token || req.headers?.authorization?.replace("Bearer ", "");
 
   if (!token) return res.status(400).json({ message: "Unauthenticated" });
 
@@ -20,13 +20,12 @@ const UserAuthMiddleware = asyncHandler(async (req, res, next) => {
     if (user.role !== "user")
       return res.status(400).json({ message: "Unauthorize user" });
 
-    if (user && !user.active)
+    if (user && !user.isEmailVerified && !user.isPhoneVerified)
       return res
         .status(400)
         .json({ message: "Please verify your account first" });
 
     req.user = user;
-
     next();
   } catch (error) {
     return res.status(500).json({ message: "Invalid Token or Token exipre" });
@@ -49,11 +48,10 @@ const AdminAuthMiddleware = asyncHandler(async (req, res, next) => {
   if (admin.role !== "admin")
     return res.status(400).json({ message: "Unauthorize user" });
 
-  if (admin && !admin.active) {
+  if (admin && !admin.isEmailVerified && !admin.isPhoneVerified)
     return res
       .status(400)
       .json({ message: "Please verify your account first" });
-  }
 
   req.user = admin;
   next();
@@ -62,7 +60,7 @@ export { UserAuthMiddleware, AdminAuthMiddleware };
 
 export class Auth {
   static async UserAuth(req, res, next) {
-    console.log("inside user auth");
+    // console.log("inside user auth");
 
     const token =
       req.cookies?.token ||
@@ -91,7 +89,6 @@ export class Auth {
 
       // Store user info in request for later use
       req.user = user;
-      console.log("before user next");
 
       next(); // Proceed to the next middleware or route handler
     } catch (error) {
@@ -128,7 +125,7 @@ export class Auth {
 
       // Store admin info in request for later use
       req.admin = admin;
-      console.log("before admin next");
+      // console.log("before admin next");
       next(); // Proceed to the next middleware or route handler
     } catch (error) {
       return res.status(401).json({ message: "Invalid token" });

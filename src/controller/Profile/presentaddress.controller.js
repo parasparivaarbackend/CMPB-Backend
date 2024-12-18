@@ -6,6 +6,8 @@ const validateSchema = z.object({
   State: z.string().min(2),
   City: z.string().min(2),
   Pincode: z.string().min(6),
+  ResidencyType: z.enum(["own", "rented"]),
+  ResidencySince: z.number().gte(0),
 });
 
 const CreatePresentAddress = async (req, res) => {
@@ -52,7 +54,7 @@ const UpdatePresentAddress = async (req, res) => {
       .status(200)
       .json({ message: "PresentAddress Updated Succesfull", updateData });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

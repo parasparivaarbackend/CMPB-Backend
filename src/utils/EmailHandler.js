@@ -31,10 +31,10 @@ export async function SendMailTemplate(item, template) {
 
     mailTransporter.sendMail(mailingdetail, function (err, data) {
       if (err) {
-        console.log(err.message);
+        console.error(err.message);
       }
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }

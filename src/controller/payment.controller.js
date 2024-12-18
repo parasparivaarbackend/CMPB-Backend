@@ -1,6 +1,8 @@
 import Razorpay from "razorpay";
 import { UserModel } from "../model/user.model.js";
 import { eventdetails } from "../model/Events/eventdetails.model.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.PAYMENT_KEY_ID,
@@ -50,7 +52,7 @@ export const payment = async (req, res) => {
 
     return res.status(200).json({ order });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to make payment" });
   }
 };

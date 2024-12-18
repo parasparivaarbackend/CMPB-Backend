@@ -131,7 +131,7 @@ const getAllUserByAdmin = async (req, res) => {
       data,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to fetch user" });
   }
 };
@@ -545,7 +545,7 @@ const getUserById = async (req, res) => {
       profileDetails: { ...profileDetails[0] },
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -569,7 +569,7 @@ const getActiveUser = async (req, res) => {
 
     return res.status(200).json({ message: "All User Data", data: AllUser });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to Fetch User" });
   }
 };
@@ -591,7 +591,7 @@ const getMemberByID = async (req, res) => {
 
     return res.status(200).json({ message: "Member Found", user });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -602,14 +602,14 @@ const listFiles = async (_, res) => {
     console.log(files);
     return res.status(200).json({ message: "all files", files });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
 const packagePaymentInUserModelValidation = z.object({
   PaymentID: z.string().min(5, "Wrong Payment ID"),
   OrderID: z.string().min(5, "Wrong Order ID"),
-  amount: z.number().min(100),
+  amount: z.number().gte(10000),
 });
 
 const UserPackageData = async (req, res) => {
@@ -628,7 +628,7 @@ const UserPackageData = async (req, res) => {
     await user.save();
     return res.status(200).json({ message: "Payment updated successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Failed to update package payment" });

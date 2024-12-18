@@ -29,7 +29,7 @@ export const CreateLifeStyle = async (req, res) => {
 
     return res.status(200).json({ message: "LifeStyle created Successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to create LifeStyle" });
   }
 };
@@ -55,7 +55,7 @@ export const UpdateLifeStyle = async (req, res) => {
       .status(200)
       .json({ message: "LifeStyle created Successfully", data: UpdatedData });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Failed to create LifeStyle" });
   }
 };

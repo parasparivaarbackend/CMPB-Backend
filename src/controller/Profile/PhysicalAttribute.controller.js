@@ -7,6 +7,7 @@ const validatePhysicalAttribute = z.object({
   skinComplexion: z.string().min(2),
   BloodGroup: z.string().min(2),
   Disablity: z.string().min(2),
+  DisablityType: z.string(),
 });
 
 const CreatePhysicalAttribute = async (req, res) => {
@@ -59,7 +60,7 @@ const UpdatePhysicalAttribute = async (req, res) => {
       data,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
