@@ -8,6 +8,7 @@ import {
   CreateBlog,
   DeleteBlog,
   GetBlog,
+  UpdateBlog,
 } from "../../controller/Blog/Blog.controller.js";
 import { uploadImage } from "../../middleware/multter.middleware.js";
 const BlogRouter = Router();
@@ -24,6 +25,12 @@ BlogRouter.route("/create").post(
 BlogRouter.route("/delete/:id").delete(
   AdminAuthMiddleware,
   asyncHandler(DeleteBlog)
+);
+
+BlogRouter.route("/update/:id").put(
+  AdminAuthMiddleware,
+  uploadImage.single("image"),
+  asyncHandler(UpdateBlog)
 );
 
 export { BlogRouter };
