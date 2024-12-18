@@ -24,6 +24,7 @@ const GetBlog = async (req, res) => {
   }
 };
 
+
 const CreateBlog = async (req, res) => {
   const createData = req.body;
   const img = req.file;
@@ -34,7 +35,7 @@ const CreateBlog = async (req, res) => {
   if (validateData.success === false) {
     return res.status(400).json({ ...validateData.error.issues });
   }
-  const uploadImage = await UploadBucketHandler(img);
+  const uploadImage = await UploadBucketHandler(img, 'blog');
   const image = {
     URL: uploadImage?.URL,
     uploadID: uploadImage?.uploadID,
@@ -49,6 +50,38 @@ const CreateBlog = async (req, res) => {
     console.error(error);
   }
 };
+
+const UpdateBlog = async (req, res) => {
+  const updateData = req.body;
+  const img = req.file;
+  const { id } = req.params;
+  const checkBlog = await blogs.findById(id);
+  if (!checkBlog) {
+    return res.status(400).json({ message: "Blog Not Found" })
+  }
+
+  const validateData = blogSchema.safeParse(updateData);
+  if (validateData.success === false) {
+    return res.status(400).json({ ...validateData.error.issues });
+  }
+
+  if (img) {
+    await DeleteBucketFile(checkBlog.image.uploadID)
+    const uploadImage = await UploadBucketHandler(img, 'blog');
+    const image = {
+      URL: uploadImage?.URL,
+      uploadID: uploadImage?.uploadID,
+    };
+    await blogs.findByIdAndUpdate(id, { ...validateData.data, image })
+    return res.status(200).json({ message: "Blog Updated" })
+  }
+
+  await blogs.findByIdAndUpdate(id, { ...validateData.data })
+  return res.status(200).json({ message: "Blog Updated" })
+
+
+
+}
 
 const DeleteBlog = async (req, res) => {
   const { id } = req.params;
@@ -65,4 +98,4 @@ const DeleteBlog = async (req, res) => {
   }
 };
 
-export { CreateBlog, DeleteBlog, GetBlog };
+export { CreateBlog, DeleteBlog, GetBlog, UpdateBlog };
