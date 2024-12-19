@@ -64,6 +64,7 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       sparse: true,
       require: true,
+      lowercase: true,
       index: { unique: true, sparse: true },
     },
     isEmailVerified: {
