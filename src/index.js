@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 4100;
 app.use(express.json({ limit: "50mb" }));
 app.use(
   cors({
-    origin: [`http://localhost:3000`, "https://api.chatmangnipatbyah.org"],
+    origin: ["https://api.chatmangnipatbyah.org", `http://localhost:3000`],
     credentials: true,
   })
 );
