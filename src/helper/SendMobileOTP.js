@@ -6,7 +6,7 @@ export const SendMobileOTP = async (mobiles, OTP) => {
     const res = await axios.post(
       `https://sms.shreetripada.com/api/sendapi.php?auth_key=${process.env.MOBILE_OTP_auth_key}&mobiles=${mobiles}&templateid=${process.env.MOBILE_OTP_templateid}&message=${message}&sender=${process.env.MOBILE_OTP_sender}`
     );
-    console.log(res.data);
+    // console.log(res.data);
   } catch (error) {
     console.log(error);
   }

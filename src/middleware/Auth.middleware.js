@@ -97,7 +97,7 @@ export class Auth {
   }
 
   static async AdminAuth(req, res, next) {
-    console.log("inside admin auth");
+    // console.log("inside admin auth");
     const token =
       req.cookies?.token ||
       (req.headers.authorization
