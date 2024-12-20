@@ -10,6 +10,7 @@ const blogSchema = z.object({
   alt: z.string().min(1),
   slug: z.string().min(2),
   description: z.string().min(2),
+  metaDescription: z.string().min(2),
 });
 
 const GetBlog = async (req, res) => {
@@ -24,7 +25,6 @@ const GetBlog = async (req, res) => {
   }
 };
 
-
 const CreateBlog = async (req, res) => {
   const createData = req.body;
   const img = req.file;
@@ -35,7 +35,8 @@ const CreateBlog = async (req, res) => {
   if (validateData.success === false) {
     return res.status(400).json({ ...validateData.error.issues });
   }
-  const uploadImage = await UploadBucketHandler(img, 'blog');
+
+  const uploadImage = await UploadBucketHandler(img, "blog");
   const image = {
     URL: uploadImage?.URL,
     uploadID: uploadImage?.uploadID,
@@ -57,7 +58,7 @@ const UpdateBlog = async (req, res) => {
   const { id } = req.params;
   const checkBlog = await blogs.findById(id);
   if (!checkBlog) {
-    return res.status(400).json({ message: "Blog Not Found" })
+    return res.status(400).json({ message: "Blog Not Found" });
   }
 
   const validateData = blogSchema.safeParse(updateData);
@@ -66,22 +67,19 @@ const UpdateBlog = async (req, res) => {
   }
 
   if (img) {
-    await DeleteBucketFile(checkBlog.image.uploadID)
-    const uploadImage = await UploadBucketHandler(img, 'blog');
+    await DeleteBucketFile(checkBlog.image.uploadID);
+    const uploadImage = await UploadBucketHandler(img, "blog");
     const image = {
       URL: uploadImage?.URL,
       uploadID: uploadImage?.uploadID,
     };
-    await blogs.findByIdAndUpdate(id, { ...validateData.data, image })
-    return res.status(200).json({ message: "Blog Updated" })
+    await blogs.findByIdAndUpdate(id, { ...validateData.data, image });
+    return res.status(200).json({ message: "Blog Updated" });
   }
 
-  await blogs.findByIdAndUpdate(id, { ...validateData.data })
-  return res.status(200).json({ message: "Blog Updated" })
-
-
-
-}
+  await blogs.findByIdAndUpdate(id, { ...validateData.data });
+  return res.status(200).json({ message: "Blog Updated" });
+};
 
 const DeleteBlog = async (req, res) => {
   const { id } = req.params;

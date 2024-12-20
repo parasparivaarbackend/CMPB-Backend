@@ -34,6 +34,11 @@ const BlogSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    metaDescription: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );

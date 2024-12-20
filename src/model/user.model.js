@@ -63,7 +63,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
       sparse: true,
-      require: true,
+      required: true,
       lowercase: true,
       index: { unique: true, sparse: true },
     },
@@ -79,7 +79,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
       sparse: true,
-      require: true,
+      required: true,
       index: { unique: true, sparse: true },
     },
     password: {
